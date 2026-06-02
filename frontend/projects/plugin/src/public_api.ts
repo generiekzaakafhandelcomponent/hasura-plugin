@@ -15,11 +15,14 @@
  */
 
 /*
- * Public API Surface of sample-plugin
+ * Public API Surface of hasura-plugin
  */
 
-export * from "./lib/plugins/sample-plugin/models";
-export * from "./lib/plugins/sample-plugin/sample-plugin-module";
-export * from "./lib/plugins/sample-plugin/sample-plugin.specification";
-export * from "./lib/plugins/sample-plugin/components/sample-plugin-configuration/sample-plugin-configuration.component";
-export * from "./lib/plugins/sample-plugin/components/sample-action-configuration/sample-action-configuration.component";
+export * from "./lib/plugins/hasura-plugin/models";
+export * from "./lib/plugins/hasura-plugin/hasura-plugin-module";
+export * from "./lib/plugins/hasura-plugin/hasura-plugin.specification";
+export * from "./lib/plugins/hasura-plugin/components/hasura-plugin-configuration/hasura-plugin-configuration.component";
+export * from "./lib/plugins/hasura-plugin/components/run-sql-action-configuration/run-sql-action-configuration.component";
+export * from "./lib/plugins/hasura-plugin/components/track-tables-action-configuration/track-tables-action-configuration.component";
+export * from "./lib/plugins/hasura-plugin/components/execute-graphql-query-action-configuration/execute-graphql-query-action-configuration.component";
+export * from "./lib/plugins/hasura-plugin/components/execute-graphql-mutation-action-configuration/execute-graphql-mutation-action-configuration.component";

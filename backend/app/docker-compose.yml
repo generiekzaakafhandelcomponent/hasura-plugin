@@ -1,8 +1,8 @@
-name: plugin-docker-compose
+name: hasura-plugin
 
 services:
   plugin-keycloak:
-    container_name: plugin-docker-compose-plugin-keycloak
+    container_name: hasura-plugin-keycloak
     depends_on:
       - plugin-keycloak-database
     image: quay.io/keycloak/keycloak:26.2.2
@@ -35,7 +35,7 @@ services:
 
   plugin-keycloak-database:
     image: postgres:17.4
-    container_name: plugin-docker-compose-plugin-keycloak-database
+    container_name: hasura-plugin-keycloak-database
     ports:
       - "54329:5432"
     environment:
@@ -43,7 +43,7 @@ services:
       POSTGRES_PASSWORD: keycloak
 
   plugin-database:
-    container_name: plugin-docker-compose-plugin-database
+    container_name: hasura-plugin-database
     image: postgres:17.4
     ports:
       - "54320:5432"
@@ -52,11 +52,11 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: plugin
     volumes:
-      - plugin-database-data:/var/lib/postgres # persist data even if container shuts down
+      - hasura-plugin-database-data:/var/lib/postgres # persist data even if container shuts down
 
   plugin-rabbitmq:
     image: rabbitmq:4.1.0-management
-    container_name: plugin-docker-compose-plugin-rabbitmq
+    container_name: hasura-plugin-plugin-rabbitmq
     volumes:
       - ./imports/plugin-rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
       - ./imports/plugin-rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
@@ -72,4 +72,4 @@ services:
       "
 
 volumes:
-  plugin-database-data:
+  hasura-plugin-database-data:
