@@ -1,0 +1,75 @@
+name: plugin-docker-compose
+
+services:
+  plugin-keycloak:
+    container_name: plugin-docker-compose-plugin-keycloak
+    depends_on:
+      - plugin-keycloak-database
+    image: quay.io/keycloak/keycloak:26.2.2
+    ports:
+      - "8081:8080"
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://plugin-keycloak-database/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak
+      KC_FEATURES: token-exchange,admin-fine-grained-authz
+      KC_HTTP_RELATIVE_PATH: /auth
+      KC_HOSTNAME_STRICT: false
+      KC_HOSTNAME_STRICT_HTTPS: false
+    volumes:
+      - ./imports/keycloak:/opt/keycloak/data/import
+    command:
+      - start-dev
+      - --import-realm
+      - --http-enabled=true
+      - --hostname-strict=false
+    healthcheck:
+      test: [ 'CMD-SHELL', '[ -f /tmp/HealthCheck.java ] || echo "public class HealthCheck { public static void main(String[] args) throws java.lang.Throwable { System.exit(((java.net.HttpURLConnection)new java.net.URL(args[0]).openConnection()).getResponseCode() == 200 ? 0 : 1); } }" > /tmp/HealthCheck.java && java /tmp/HealthCheck.java http://localhost:8080/auth' ]
+      interval: 10s
+      timeout: 5s
+      retries: 60
+      start_period: 5s
+
+  plugin-keycloak-database:
+    image: postgres:17.4
+    container_name: plugin-docker-compose-plugin-keycloak-database
+    ports:
+      - "54329:5432"
+    environment:
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak
+
+  plugin-database:
+    container_name: plugin-docker-compose-plugin-database
+    image: postgres:17.4
+    ports:
+      - "54320:5432"
+    environment:
+      POSTGRES_USER: plugin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: plugin
+    volumes:
+      - plugin-database-data:/var/lib/postgres # persist data even if container shuts down
+
+  plugin-rabbitmq:
+    image: rabbitmq:4.1.0-management
+    container_name: plugin-docker-compose-plugin-rabbitmq
+    volumes:
+      - ./imports/plugin-rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+      - ./imports/plugin-rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_CONFIG_FILE: /etc/rabbitmq/rabbitmq.conf
+    command: >
+      bash -c "
+        rabbitmq-plugins enable --offline rabbitmq_stream rabbitmq_stream_management &&
+        rabbitmq-server
+      "
+
+volumes:
+  plugin-database-data:
