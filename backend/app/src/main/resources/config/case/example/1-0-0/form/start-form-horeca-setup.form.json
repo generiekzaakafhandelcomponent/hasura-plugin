@@ -1,0 +1,22 @@
+{
+    "display": "form",
+    "components": [
+        {
+            "key": "html",
+            "type": "htmlelement",
+            "input": false,
+            "label": "Instructions",
+            "content": "Start dit proces om de horeca_vergunning tabel aan te maken, de voorbeelddata te importeren en de tabel te registreren in Hasura.",
+            "tableView": false,
+            "refreshOnChange": false
+        },
+        {
+            "key": "submit",
+            "type": "button",
+            "input": true,
+            "label": "Starten",
+            "tableView": false,
+            "disableOnInvalid": true
+        }
+    ]
+}

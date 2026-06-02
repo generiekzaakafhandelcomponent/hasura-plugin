@@ -22,7 +22,7 @@ interface HasuraPluginConfig extends PluginConfigurationData {
 }
 
 interface RunSqlActionConfig {
-  sql: string;
+  files: Array<string>;
 }
 
 interface TrackTablesActionConfig {

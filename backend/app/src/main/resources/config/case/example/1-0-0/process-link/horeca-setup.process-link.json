@@ -1,0 +1,30 @@
+[
+    {
+        "activityId": "start-event",
+        "activityType": "bpmn:StartEvent:start",
+        "processLinkType": "form",
+        "formDefinitionName": "start-form-horeca-setup"
+    },
+    {
+        "activityId": "create-horeca-table",
+        "activityType": "bpmn:ServiceTask:start",
+        "processLinkType": "plugin",
+        "pluginDefinitionKey": "hasura-plugin",
+        "pluginActionDefinitionKey": "run-sql",
+        "pluginConfigurationId": "4ac9a49f-4aeb-4f91-86d9-853fd95a1b33",
+        "actionProperties": {
+            "files": ["create_horeca_vergunning.sql"]
+        }
+    },
+    {
+        "activityId": "track-horeca-table",
+        "activityType": "bpmn:ServiceTask:start",
+        "processLinkType": "plugin",
+        "pluginDefinitionKey": "hasura-plugin",
+        "pluginActionDefinitionKey": "track-tables",
+        "pluginConfigurationId": "4ac9a49f-4aeb-4f91-86d9-853fd95a1b33",
+        "actionProperties": {
+            "tables": ["horeca_vergunning"]
+        }
+    }
+]

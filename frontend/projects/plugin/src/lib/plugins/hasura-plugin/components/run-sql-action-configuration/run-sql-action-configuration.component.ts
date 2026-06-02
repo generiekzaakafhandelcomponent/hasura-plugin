@@ -15,9 +15,8 @@
  */
 
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from "@angular/core";
-import {FunctionConfigurationComponent, FunctionConfigurationData} from "@valtimo/plugin";
-import {EditorModel} from "@valtimo/components";
-import {BehaviorSubject, combineLatest, Observable, Subscription, take} from "rxjs";
+import {FunctionConfigurationComponent} from "@valtimo/plugin";
+import {BehaviorSubject, combineLatest, map, Observable, Subscription, take} from "rxjs";
 import {RunSqlActionConfig} from "../../models";
 
 @Component({
@@ -31,48 +30,45 @@ export class RunSqlActionConfigurationComponent implements FunctionConfiguration
   @Input() pluginId!: string;
   @Input() prefillConfiguration$!: Observable<RunSqlActionConfig>;
   @Output() valid: EventEmitter<boolean> = new EventEmitter<boolean>();
-  @Output() configuration: EventEmitter<FunctionConfigurationData> = new EventEmitter<FunctionConfigurationData>();
+  @Output() configuration: EventEmitter<RunSqlActionConfig> = new EventEmitter<RunSqlActionConfig>();
 
-  readonly sqlModel$ = new BehaviorSubject<EditorModel>({value: "", language: "sql"});
+  defaultFiles$!: Observable<Array<{key: string; value: string}> | undefined>;
 
-  private readonly sql$ = new BehaviorSubject<string>("");
-  private readonly valid$ = new BehaviorSubject<boolean>(false);
   private saveSubscription!: Subscription;
-  private prefillSubscription!: Subscription;
+  private readonly formValue$ = new BehaviorSubject<RunSqlActionConfig | null>(null);
+  private readonly valid$ = new BehaviorSubject<boolean>(false);
 
   ngOnInit(): void {
-    this.prefillSubscription = this.prefillConfiguration$?.pipe(take(1)).subscribe(config => {
-      if (config) {
-        this.sql$.next(config.sql ?? "");
-        this.sqlModel$.next({value: config.sql ?? "", language: "sql"});
-      }
-      this.emitValid();
-    });
-
-    this.saveSubscription = this.save$?.subscribe(() => {
-      combineLatest([this.sql$, this.valid$])
-        .pipe(take(1))
-        .subscribe(([sql, valid]) => {
-          if (valid) {
-            this.configuration.emit({sql});
-          }
-        });
-    });
+    this.defaultFiles$ = this.prefillConfiguration$.pipe(
+      map(config => config?.files?.map(value => ({key: value, value: value})))
+    );
+    this.openSaveSubscription();
   }
 
   ngOnDestroy(): void {
     this.saveSubscription?.unsubscribe();
-    this.prefillSubscription?.unsubscribe();
   }
 
-  onSqlChange(value: string): void {
-    this.sql$.next(value);
-    this.emitValid();
+  formValueChange(formValue: RunSqlActionConfig): void {
+    this.formValue$.next(formValue);
+    this.handleValid(formValue);
   }
 
-  private emitValid(): void {
-    const valid = !!this.sql$.value?.trim();
+  private handleValid(formValue: RunSqlActionConfig): void {
+    const valid = !!(formValue?.files?.length);
     this.valid$.next(valid);
     this.valid.emit(valid);
+  }
+
+  private openSaveSubscription(): void {
+    this.saveSubscription = this.save$?.subscribe(() => {
+      combineLatest([this.formValue$, this.valid$])
+        .pipe(take(1))
+        .subscribe(([formValue, valid]) => {
+          if (valid) {
+            this.configuration.emit(formValue!);
+          }
+        });
+    });
   }
 }

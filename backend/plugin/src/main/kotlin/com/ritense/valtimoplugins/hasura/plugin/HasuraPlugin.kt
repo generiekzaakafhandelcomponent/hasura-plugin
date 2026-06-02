@@ -26,6 +26,8 @@ import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_STA
 import com.ritense.valtimoplugins.hasura.client.HasuraClient
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.operaton.bpm.engine.delegate.DelegateExecution
+import kotlin.io.path.Path
+import kotlin.io.path.readText
 
 private val logger = KotlinLogging.logger {}
 
@@ -48,15 +50,19 @@ open class HasuraPlugin(
     @PluginAction(
         key = "run-sql",
         title = "Run SQL",
-        description = "Executes SQL via the Hasura Schema API",
+        description = "Reads SQL files from the HASURA_DDL_DIR environment variable (default: $DEFAULT_DDL_DIR) and executes them in order via the Hasura Schema API",
         activityTypes = [SERVICE_TASK_START],
     )
     open fun runSql(
         execution: DelegateExecution,
-        @PluginActionProperty sql: String,
+        @PluginActionProperty files: List<String>,
     ) {
-        logger.info { "Running SQL via Hasura at $hasuraUrl" }
-        hasuraClient.runSql(hasuraUrl, hasuraAdminSecret, sql)
+        val ddlDir = System.getenv("HASURA_DDL_DIR") ?: DEFAULT_DDL_DIR
+        files.forEach { fileName ->
+            logger.info { "Executing $ddlDir/$fileName via Hasura at $hasuraUrl" }
+            val sql = Path("$ddlDir/$fileName").readText()
+            hasuraClient.runSql(hasuraUrl, hasuraAdminSecret, sql)
+        }
     }
 
     @PluginAction(
@@ -119,4 +125,8 @@ open class HasuraPlugin(
         } else {
             emptyMap()
         }
+
+    companion object {
+        const val DEFAULT_DDL_DIR = "/opt/hasura/ddl"
+    }
 }
