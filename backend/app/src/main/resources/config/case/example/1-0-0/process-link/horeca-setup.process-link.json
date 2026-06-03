@@ -17,6 +17,17 @@
         }
     },
     {
+        "activityId": "import-horeca-data",
+        "activityType": "bpmn:ServiceTask:start",
+        "processLinkType": "plugin",
+        "pluginDefinitionKey": "hasura-plugin",
+        "pluginActionDefinitionKey": "run-sql",
+        "pluginConfigurationId": "4ac9a49f-4aeb-4f91-86d9-853fd95a1b33",
+        "actionProperties": {
+            "files": ["data-horeca.sql"]
+        }
+    },
+    {
         "activityId": "track-horeca-table",
         "activityType": "bpmn:ServiceTask:start",
         "processLinkType": "plugin",
