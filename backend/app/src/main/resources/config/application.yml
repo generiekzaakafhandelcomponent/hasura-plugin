@@ -1,6 +1,6 @@
 spring:
   application:
-    name: valtimo-plugin-template
+    name: hasura-plugin
   profiles:
     active: dev
   jackson:

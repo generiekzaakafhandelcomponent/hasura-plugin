@@ -23,8 +23,8 @@ pluginManager.withPlugin("maven-publish") {
                 version = pluginProperties.pluginVersion
 
                 pom {
-                    name = "Sample plugin module"
-                    description = "A module containing a sample plugin"
+                    name = "Hasura plugin module"
+                    description = "Hasura plugin integrating with Hasura"
                     developers {
                         developer {
                             id = "team-valtimo"

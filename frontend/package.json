@@ -1,6 +1,6 @@
 {
-    "name": "valtimo-plugin-template",
-    "version": "0.0.0",
+    "name": "hasura-plugin",
+    "version": "1.0.0",
     "engines": {
         "node": ">=20.0.0 <23.0.0"
     },

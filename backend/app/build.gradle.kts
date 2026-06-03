@@ -26,14 +26,14 @@ apply(from = "../../gradle/environment.gradle.kts")
 val configureEnvironment = extra["configureEnvironment"] as (task: ProcessForkOptions) -> Unit
 
 dockerCompose {
-    setProjectName("valtimo-docker-compose")
+    setProjectName("hasura-plugin")
     stopContainers = false
     removeContainers = false
     removeVolumes = false
 }
 
 tasks.bootRun {
-    dependsOn("composeUp")
+   // dependsOn("composeUp")
     systemProperty("spring.profiles.include", "dev")
     val t = this
     doFirst {
