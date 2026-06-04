@@ -1,0 +1,34 @@
+[
+    {
+        "activityId": "start-event",
+        "activityType": "bpmn:StartEvent:start",
+        "processLinkType": "form",
+        "formDefinitionName": "start-form-horeca-vergunningen-beheer"
+    },
+    {
+        "activityId": "query-horeca-vergunningen",
+        "activityType": "bpmn:ServiceTask:start",
+        "processLinkType": "plugin",
+        "pluginDefinitionKey": "hasura-plugin",
+        "pluginActionDefinitionKey": "graphql-by-input",
+        "pluginConfigurationId": "4ac9a49f-4aeb-4f91-86d9-853fd95a1b33",
+        "actionProperties": {
+            "query": "query GetHorecaVergunningen {\n  horeca_vergunning(limit: 10, order_by: {id: asc}) {\n    id\n    zaaknaam\n    adres\n    zaak_categorie\n    status_vergunning\n    begindatum\n    einddatum\n  }\n}",
+            "resultProcessVariableName": "horecaQueryResult"
+        }
+    }
+    ,
+    {
+        "activityId": "insert-new-vergunningen",
+        "activityType": "bpmn:ServiceTask:start",
+        "processLinkType": "plugin",
+        "pluginDefinitionKey": "hasura-plugin",
+        "pluginActionDefinitionKey": "mutation-by-process-variable",
+        "pluginConfigurationId": "4ac9a49f-4aeb-4f91-86d9-853fd95a1b33",
+        "actionProperties": {
+            "mutation": "mutation InsertHorecaVergunningen($objects: [horeca_vergunning_insert_input!]!) {\n  insert_horeca_vergunning(objects: $objects, on_conflict: {constraint: horeca_vergunning_pkey, update_columns: [updated_at]}) {\n    affected_rows\n  }\n}",
+            "objectsVariableName": "newVergunningen",
+            "resultProcessVariableName": "insertResult"
+        }
+    }
+]

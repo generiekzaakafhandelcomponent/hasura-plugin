@@ -14,13 +14,17 @@
   ~ limitations under the License.
   -->
 
-<div *ngIf="{disabled: disabled$ | async} as obs">
-  <p class="v-label">{{ 'sql' | pluginTranslate: pluginId | async }}</p>
-  <valtimo-editor
-    [model]="sqlModel$ | async"
-    [disabled]="obs.disabled"
-    [heightPx]="300"
-    [formatOnLoad]="false"
-    (valueChangeEvent)="onSqlChange($event)"
-  ></valtimo-editor>
-</div>
+<v-form
+  (valueChange)="formValueChange($event)"
+  *ngIf="{
+    disabled: disabled$ | async,
+    prefill: prefillConfiguration$ ? (prefillConfiguration$ | async) : null
+  } as obs"
+>
+  <valtimo-carbon-multi-input
+    name="files"
+    [title]="'files' | pluginTranslate: pluginId | async"
+    [defaultValues]="defaultFiles$ | async"
+    [fullWidth]="true"
+  ></valtimo-carbon-multi-input>
+</v-form>

@@ -1,0 +1,7 @@
+[
+    {
+        "processDefinitionKey": "horeca-vergunningen-beheer",
+        "canInitializeDocument": true,
+        "startableByUser": true
+    }
+]

@@ -24,5 +24,5 @@ export * from "./lib/plugins/hasura-plugin/hasura-plugin.specification";
 export * from "./lib/plugins/hasura-plugin/components/hasura-plugin-configuration/hasura-plugin-configuration.component";
 export * from "./lib/plugins/hasura-plugin/components/run-sql-action-configuration/run-sql-action-configuration.component";
 export * from "./lib/plugins/hasura-plugin/components/track-tables-action-configuration/track-tables-action-configuration.component";
-export * from "./lib/plugins/hasura-plugin/components/execute-graphql-query-action-configuration/execute-graphql-query-action-configuration.component";
-export * from "./lib/plugins/hasura-plugin/components/execute-graphql-mutation-action-configuration/execute-graphql-mutation-action-configuration.component";
+export * from "./lib/plugins/hasura-plugin/components/graphql-by-input-action-configuration/graphql-by-input-action-configuration.component";
+export * from "./lib/plugins/hasura-plugin/components/mutation-by-process-variable-action-configuration/mutation-by-process-variable-action-configuration.component";

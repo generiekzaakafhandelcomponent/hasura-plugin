@@ -26,6 +26,8 @@ import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_STA
 import com.ritense.valtimoplugins.hasura.client.HasuraClient
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.operaton.bpm.engine.delegate.DelegateExecution
+import kotlin.io.path.Path
+import kotlin.io.path.readText
 
 private val logger = KotlinLogging.logger {}
 
@@ -46,17 +48,27 @@ open class HasuraPlugin(
     lateinit var hasuraAdminSecret: String
 
     @PluginAction(
-        key = "run-sql",
-        title = "Run SQL",
-        description = "Executes SQL via the Hasura Schema API",
+        key = "execute-sql-files",
+        title = "Execute SQL Files",
+        description = "Reads SQL files from the HASURA_DDL_DIR environment variable (default: $DEFAULT_DDL_DIR) and executes them in order via the Hasura Schema API",
         activityTypes = [SERVICE_TASK_START],
     )
     open fun runSql(
         execution: DelegateExecution,
-        @PluginActionProperty sql: String,
+        @PluginActionProperty files: List<String>,
     ) {
-        logger.info { "Running SQL via Hasura at $hasuraUrl" }
-        hasuraClient.runSql(hasuraUrl, hasuraAdminSecret, sql)
+        val ddlDir = Path(System.getenv("HASURA_DDL_DIR") ?: DEFAULT_DDL_DIR).normalize()
+        files.forEach { fileName ->
+            val resolved = ddlDir.resolve(fileName).normalize()
+            require(resolved.startsWith(ddlDir)) { "File '$fileName' escapes DDL directory" }
+            logger.info { "Executing $resolved via Hasura at $hasuraUrl" }
+            val sql = try {
+                resolved.readText()
+            } catch (e: Exception) {
+                throw IllegalStateException("Could not read SQL file '$resolved': ${e.message}", e)
+            }
+            hasuraClient.runSql(hasuraUrl, hasuraAdminSecret, sql)
+        }
     }
 
     @PluginAction(
@@ -74,12 +86,12 @@ open class HasuraPlugin(
     }
 
     @PluginAction(
-        key = "execute-graphql-query",
-        title = "Execute GraphQL Query",
+        key = "graphql-by-input",
+        title = "GraphQL by Input",
         description = "Executes a GraphQL query and stores the result in a process variable",
         activityTypes = [SERVICE_TASK_START],
     )
-    open fun executeGraphQlQuery(
+    open fun graphQlByInput(
         execution: DelegateExecution,
         @PluginActionProperty query: String,
         @PluginActionProperty variables: String?,
@@ -91,24 +103,21 @@ open class HasuraPlugin(
     }
 
     @PluginAction(
-        key = "execute-graphql-mutation",
-        title = "Execute GraphQL Mutation",
-        description = "Executes a GraphQL mutation. If objectsVariableName is set, reads a list from that process variable and passes it as {\"objects\": list}; otherwise uses the variables JSON.",
+        key = "mutation-by-process-variable",
+        title = "Mutation by Process Variable",
+        description = "Executes a GraphQL mutation, passing the value of a process variable as {\"objects\": value}.",
         activityTypes = [SERVICE_TASK_START],
     )
-    open fun executeGraphQlMutation(
+    open fun mutationByProcessVariable(
         execution: DelegateExecution,
         @PluginActionProperty mutation: String,
-        @PluginActionProperty variables: String?,
-        @PluginActionProperty objectsVariableName: String?,
+        @PluginActionProperty objectsVariableName: String,
         @PluginActionProperty resultProcessVariableName: String?,
     ) {
         logger.info { "Executing GraphQL mutation via Hasura at $hasuraUrl" }
-        val vars = if (objectsVariableName != null) {
-            mapOf("objects" to execution.getVariable(objectsVariableName))
-        } else {
-            parseVariables(variables)
-        }
+        val raw = execution.getVariable(objectsVariableName)
+        val objects = if (raw is String) objectMapper.readValue(raw, object : TypeReference<Any>() {}) else raw
+        val vars = mapOf("objects" to objects)
         val data = hasuraClient.executeGraphQlQuery(hasuraUrl, hasuraAdminSecret, mutation, vars)
         resultProcessVariableName?.let { execution.setVariable(it, data) }
     }
@@ -119,4 +128,8 @@ open class HasuraPlugin(
         } else {
             emptyMap()
         }
+
+    companion object {
+        const val DEFAULT_DDL_DIR = "/opt/hasura/ddl"
+    }
 }

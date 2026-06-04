@@ -18,28 +18,26 @@ import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from "@angula
 import {FunctionConfigurationComponent} from "@valtimo/plugin";
 import {EditorModel} from "@valtimo/components";
 import {BehaviorSubject, combineLatest, Observable, Subscription, take} from "rxjs";
-import {ExecuteGraphQlMutationActionConfig} from "../../models";
+import {MutationByProcessVariableActionConfig} from "../../models";
 
 @Component({
   standalone: false,
-  selector: "valtimo-execute-graphql-mutation-action-configuration",
-  templateUrl: "./execute-graphql-mutation-action-configuration.component.html",
+  selector: "valtimo-mutation-by-process-variable-action-configuration",
+  templateUrl: "./mutation-by-process-variable-action-configuration.component.html",
 })
-export class ExecuteGraphQlMutationActionConfigurationComponent implements FunctionConfigurationComponent, OnInit, OnDestroy {
+export class MutationByProcessVariableActionConfigurationComponent implements FunctionConfigurationComponent, OnInit, OnDestroy {
   @Input() save$!: Observable<void>;
   @Input() disabled$!: Observable<boolean>;
   @Input() pluginId!: string;
-  @Input() prefillConfiguration$!: Observable<ExecuteGraphQlMutationActionConfig>;
+  @Input() prefillConfiguration$!: Observable<MutationByProcessVariableActionConfig>;
   @Output() valid: EventEmitter<boolean> = new EventEmitter<boolean>();
-  @Output() configuration: EventEmitter<ExecuteGraphQlMutationActionConfig> = new EventEmitter<ExecuteGraphQlMutationActionConfig>();
+  @Output() configuration: EventEmitter<MutationByProcessVariableActionConfig> = new EventEmitter<MutationByProcessVariableActionConfig>();
 
   readonly mutationModel$ = new BehaviorSubject<EditorModel>({value: "", language: "graphql"});
-  readonly variablesModel$ = new BehaviorSubject<EditorModel>({value: "", language: "json"});
   readonly objectsVariableName$ = new BehaviorSubject<string>("");
   readonly resultProcessVariableName$ = new BehaviorSubject<string>("");
 
   private readonly mutation$ = new BehaviorSubject<string>("");
-  private readonly variables$ = new BehaviorSubject<string>("");
   private readonly valid$ = new BehaviorSubject<boolean>(false);
   private saveSubscription!: Subscription;
   private prefillSubscription!: Subscription;
@@ -48,24 +46,21 @@ export class ExecuteGraphQlMutationActionConfigurationComponent implements Funct
     this.prefillSubscription = this.prefillConfiguration$?.pipe(take(1)).subscribe(config => {
       if (config) {
         this.mutation$.next(config.mutation ?? "");
-        this.variables$.next(config.variables ?? "");
         this.objectsVariableName$.next(config.objectsVariableName ?? "");
         this.resultProcessVariableName$.next(config.resultProcessVariableName ?? "");
         this.mutationModel$.next({value: config.mutation ?? "", language: "graphql"});
-        this.variablesModel$.next({value: config.variables ?? "", language: "json"});
       }
       this.emitValid();
     });
 
     this.saveSubscription = this.save$?.subscribe(() => {
-      combineLatest([this.mutation$, this.variables$, this.objectsVariableName$, this.resultProcessVariableName$, this.valid$])
+      combineLatest([this.mutation$, this.objectsVariableName$, this.resultProcessVariableName$, this.valid$])
         .pipe(take(1))
-        .subscribe(([mutation, variables, objectsVariableName, resultProcessVariableName, valid]) => {
+        .subscribe(([mutation, objectsVariableName, resultProcessVariableName, valid]) => {
           if (valid) {
             this.configuration.emit({
               mutation,
-              variables: variables || undefined,
-              objectsVariableName: objectsVariableName || undefined,
+              objectsVariableName,
               resultProcessVariableName: resultProcessVariableName || undefined,
             });
           }
@@ -83,12 +78,9 @@ export class ExecuteGraphQlMutationActionConfigurationComponent implements Funct
     this.emitValid();
   }
 
-  onVariablesChange(value: string): void {
-    this.variables$.next(value);
-  }
-
   onObjectsVariableNameChange(value: string): void {
     this.objectsVariableName$.next(value);
+    this.emitValid();
   }
 
   onResultVariableChange(value: string): void {
@@ -96,7 +88,7 @@ export class ExecuteGraphQlMutationActionConfigurationComponent implements Funct
   }
 
   private emitValid(): void {
-    const valid = !!this.mutation$.value?.trim();
+    const valid = !!(this.mutation$.value?.trim() && this.objectsVariableName$.value?.trim());
     this.valid$.next(valid);
     this.valid.emit(valid);
   }

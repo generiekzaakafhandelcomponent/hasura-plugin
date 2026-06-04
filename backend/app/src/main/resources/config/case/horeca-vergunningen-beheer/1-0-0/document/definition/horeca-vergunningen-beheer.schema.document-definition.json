@@ -1,0 +1,16 @@
+{
+    "$id": "horeca-vergunningen-beheer.schema",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Horeca Vergunningen Beheer",
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string",
+            "description": "Name"
+        },
+        "horecaData": {
+            "description": "Horeca vergunningen opgehaald via Hasura GraphQL",
+            "type": "object"
+        }
+    }
+}

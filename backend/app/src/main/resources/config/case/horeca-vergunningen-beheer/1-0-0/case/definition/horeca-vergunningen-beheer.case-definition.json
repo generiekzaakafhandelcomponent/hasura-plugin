@@ -1,6 +1,6 @@
 {
-    "key": "example",
-    "name": "Example",
+    "key": "horeca-vergunningen-beheer",
+    "name": "Horeca Vergunningen Beheer",
     "versionTag": "1.0.0",
     "final": false,
     "canHaveAssignee": true,

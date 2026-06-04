@@ -18,20 +18,20 @@ import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from "@angula
 import {FunctionConfigurationComponent} from "@valtimo/plugin";
 import {EditorModel} from "@valtimo/components";
 import {BehaviorSubject, combineLatest, Observable, Subscription, take} from "rxjs";
-import {ExecuteGraphQlQueryActionConfig} from "../../models";
+import {GraphQlByInputActionConfig} from "../../models";
 
 @Component({
   standalone: false,
-  selector: "valtimo-execute-graphql-query-action-configuration",
-  templateUrl: "./execute-graphql-query-action-configuration.component.html",
+  selector: "valtimo-graphql-by-input-action-configuration",
+  templateUrl: "./graphql-by-input-action-configuration.component.html",
 })
-export class ExecuteGraphQlQueryActionConfigurationComponent implements FunctionConfigurationComponent, OnInit, OnDestroy {
+export class GraphQlByInputActionConfigurationComponent implements FunctionConfigurationComponent, OnInit, OnDestroy {
   @Input() save$!: Observable<void>;
   @Input() disabled$!: Observable<boolean>;
   @Input() pluginId!: string;
-  @Input() prefillConfiguration$!: Observable<ExecuteGraphQlQueryActionConfig>;
+  @Input() prefillConfiguration$!: Observable<GraphQlByInputActionConfig>;
   @Output() valid: EventEmitter<boolean> = new EventEmitter<boolean>();
-  @Output() configuration: EventEmitter<ExecuteGraphQlQueryActionConfig> = new EventEmitter<ExecuteGraphQlQueryActionConfig>();
+  @Output() configuration: EventEmitter<GraphQlByInputActionConfig> = new EventEmitter<GraphQlByInputActionConfig>();
 
   readonly queryModel$ = new BehaviorSubject<EditorModel>({value: "", language: "graphql"});
   readonly variablesModel$ = new BehaviorSubject<EditorModel>({value: "", language: "json"});
