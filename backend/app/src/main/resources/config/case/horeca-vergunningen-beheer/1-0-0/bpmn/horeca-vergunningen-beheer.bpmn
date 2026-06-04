@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  id="Definitions_1"
+                  targetNamespace="http://bpmn.io/schema/bpmn"
+                  exporter="Camunda Modeler"
+                  exporterVersion="5.39.0">
+    <bpmn:collaboration id="Collaboration_1">
+        <bpmn:participant id="horeca-vergunningen-beheer-participant" name="Horeca Vergunningen Beheer" processRef="horeca-vergunningen-beheer"/>
+    </bpmn:collaboration>
+    <bpmn:process id="horeca-vergunningen-beheer" name="Horeca Vergunningen Beheer" isExecutable="true">
+        <bpmn:startEvent id="start-event" name="Process started">
+            <bpmn:outgoing>Flow_1</bpmn:outgoing>
+        </bpmn:startEvent>
+        <bpmn:serviceTask id="query-horeca-vergunningen" name="Haal horeca vergunningen op via Hasura">
+            <bpmn:incoming>Flow_1</bpmn:incoming>
+            <bpmn:outgoing>Flow_2</bpmn:outgoing>
+        </bpmn:serviceTask>
+        <bpmn:scriptTask id="prepare-new-vergunningen" name="Bereid 5 nieuwe vergunningen voor" scriptFormat="javascript">
+            <bpmn:incoming>Flow_2</bpmn:incoming>
+            <bpmn:outgoing>Flow_3</bpmn:outgoing>
+            <bpmn:script><![CDATA[
+var now = new Date().toISOString();
+var records = [
+  {id: 101, zaaknummer: 20260601, zaaknaam: 'Café Nieuwe Stijl',        adres: 'Kalverstraat 1',    zaak_categorie: 'Café',        zaak_specificatie: 'Exploitatievergunning', begindatum: '2026-01-01', einddatum: '2031-01-01', openingstijden_zo_do_van: '12:00', openingstijden_zo_do_tot: '01:00', openingstijden_vr_za_van: '12:00', openingstijden_vr_za_tot: '03:00', locatie: 'POINT(4.8953 52.3699)', postcode: '1012 CA', status_vergunning: 'Verleend', updated_at: now},
+  {id: 102, zaaknummer: 20260602, zaaknaam: 'Restaurant Hollands Glorie', adres: 'Rokin 20',          zaak_categorie: 'Restaurant',  zaak_specificatie: 'Exploitatievergunning', begindatum: '2026-02-01', einddatum: '2031-02-01', openingstijden_zo_do_van: '17:00', openingstijden_zo_do_tot: '23:00', openingstijden_vr_za_van: '17:00', openingstijden_vr_za_tot: '23:30', locatie: 'POINT(4.8942 52.3695)', postcode: '1012 KS', status_vergunning: 'Verleend', updated_at: now},
+  {id: 103, zaaknummer: 20260603, zaaknaam: 'Bar De Luwte',              adres: 'Keizersgracht 100', zaak_categorie: 'Cocktailbar', zaak_specificatie: 'Exploitatievergunning', begindatum: '2026-03-01', einddatum: '2031-03-01', openingstijden_zo_do_van: '16:00', openingstijden_zo_do_tot: '01:00', openingstijden_vr_za_van: '16:00', openingstijden_vr_za_tot: '03:00', locatie: 'POINT(4.8871 52.3742)', postcode: '1015 CJ', status_vergunning: 'Verleend', updated_at: now},
+  {id: 104, zaaknummer: 20260604, zaaknaam: 'Grand Café Het IJ',         adres: 'NDSM-plein 1',      zaak_categorie: 'Grand Café',  zaak_specificatie: 'Exploitatievergunning', begindatum: '2026-04-01', einddatum: '2031-04-01', openingstijden_zo_do_van: '11:00', openingstijden_zo_do_tot: '01:00', openingstijden_vr_za_van: '11:00', openingstijden_vr_za_tot: '02:00', locatie: 'POINT(4.8999 52.4001)', postcode: '1033 WB', status_vergunning: 'Verleend', updated_at: now},
+  {id: 105, zaaknummer: 20260605, zaaknaam: 'Cocktailbar Proust',        adres: 'Noordermarkt 4',    zaak_categorie: 'Cocktailbar', zaak_specificatie: 'Exploitatievergunning', begindatum: '2026-05-01', einddatum: '2031-05-01', openingstijden_zo_do_van: '17:00', openingstijden_zo_do_tot: '01:00', openingstijden_vr_za_van: '17:00', openingstijden_vr_za_tot: '03:00', locatie: 'POINT(4.8848 52.3793)', postcode: '1015 NA', status_vergunning: 'Verleend', updated_at: now}
+];
+execution.setVariable('newVergunningen', JSON.stringify(records));
+            ]]></bpmn:script>
+        </bpmn:scriptTask>
+        <bpmn:serviceTask id="insert-new-vergunningen" name="Importeer 5 nieuwe vergunningen via Hasura">
+            <bpmn:incoming>Flow_3</bpmn:incoming>
+            <bpmn:outgoing>Flow_4</bpmn:outgoing>
+        </bpmn:serviceTask>
+        <bpmn:endEvent id="end-event" name="Process ended">
+            <bpmn:extensionElements>
+                <camunda:executionListener expression="${valueResolverDelegateService.handleValue(execution, 'doc:/horecaData', execution.getVariable('horecaQueryResult'))}" event="start"/>
+            </bpmn:extensionElements>
+            <bpmn:incoming>Flow_4</bpmn:incoming>
+        </bpmn:endEvent>
+        <bpmn:sequenceFlow id="Flow_1" sourceRef="start-event" targetRef="query-horeca-vergunningen"/>
+        <bpmn:sequenceFlow id="Flow_2" sourceRef="query-horeca-vergunningen" targetRef="prepare-new-vergunningen"/>
+        <bpmn:sequenceFlow id="Flow_3" sourceRef="prepare-new-vergunningen" targetRef="insert-new-vergunningen"/>
+        <bpmn:sequenceFlow id="Flow_4" sourceRef="insert-new-vergunningen" targetRef="end-event"/>
+    </bpmn:process>
+    <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+        <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1">
+            <bpmndi:BPMNShape id="Participant_1_di" bpmnElement="horeca-vergunningen-beheer-participant" isHorizontal="true">
+                <dc:Bounds x="160" y="100" width="1000" height="200"/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="start-event">
+                <dc:Bounds x="232" y="182" width="36" height="36"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds x="214" y="225" width="73" height="14"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="ServiceTask_1_di" bpmnElement="query-horeca-vergunningen">
+                <dc:Bounds x="370" y="160" width="100" height="80"/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="ScriptTask_1_di" bpmnElement="prepare-new-vergunningen">
+                <dc:Bounds x="530" y="160" width="100" height="80"/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="ServiceTask_2_di" bpmnElement="insert-new-vergunningen">
+                <dc:Bounds x="690" y="160" width="100" height="80"/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="EndEvent_1_di" bpmnElement="end-event">
+                <dc:Bounds x="872" y="182" width="36" height="36"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds x="855" y="225" width="71" height="14"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNEdge id="Flow_1_di" bpmnElement="Flow_1">
+                <di:waypoint x="268" y="200"/>
+                <di:waypoint x="370" y="200"/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="Flow_2_di" bpmnElement="Flow_2">
+                <di:waypoint x="470" y="200"/>
+                <di:waypoint x="530" y="200"/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="Flow_3_di" bpmnElement="Flow_3">
+                <di:waypoint x="630" y="200"/>
+                <di:waypoint x="690" y="200"/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="Flow_4_di" bpmnElement="Flow_4">
+                <di:waypoint x="790" y="200"/>
+                <di:waypoint x="872" y="200"/>
+            </bpmndi:BPMNEdge>
+        </bpmndi:BPMNPlane>
+    </bpmndi:BPMNDiagram>
+</bpmn:definitions>

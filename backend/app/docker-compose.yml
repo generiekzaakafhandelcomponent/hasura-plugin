@@ -52,7 +52,7 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: plugin
     volumes:
-      - hasura-plugin-database-data:/var/lib/postgres # persist data even if container shuts down
+      - keycloak-plugin-database-data:/var/lib/postgresql/data # persist data even if container shuts down
 
   # ── Hasura GraphQL Engine ──────────────────────────────────────────────────
   hasura:
@@ -62,12 +62,12 @@ services:
     depends_on:
       - hasura-database
     environment:
-      HASURA_GRAPHQL_DATABASE_URL: postgres://hasura:hasura@host.docker.internal:54322/hasura
+      HASURA_GRAPHQL_DATABASE_URL: postgres://hasura:hasura@hasura-database:5432/hasura
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
       HASURA_GRAPHQL_DEV_MODE: "true"
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup,http-log,webhook-log
       HASURA_GRAPHQL_ADMIN_SECRET: admin
-      HASURA_GRAPHQL_METADATA_DATABASE_URL: postgres://hasura:hasura@host.docker.internal:54322/hasura
+      HASURA_GRAPHQL_METADATA_DATABASE_URL: postgres://hasura:hasura@hasura-database:5432/hasura
       HASURA_GRAPHQL_UNAUTHORIZED_ROLE: public
       HASURA_GRAPHQL_LOG_LEVEL: debug
     ports:
@@ -88,7 +88,8 @@ services:
       POSTGRES_PASSWORD: hasura
       POSTGRES_DB: hasura
     volumes:
-      - hasura-plugin-database-data:/var/lib/lrk-import-postgres # persist
+      - hasura-plugin-database-data:/var/lib/postgresql/data # persist
 
 volumes:
   hasura-plugin-database-data:
+  keycloak-plugin-database-data:

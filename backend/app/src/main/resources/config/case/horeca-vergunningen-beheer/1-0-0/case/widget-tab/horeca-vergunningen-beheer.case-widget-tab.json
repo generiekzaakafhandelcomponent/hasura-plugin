@@ -4,8 +4,8 @@
         "widgets": [
             {
                 "type": "fields",
-                "key": "process-variable-result",
-                "title": "Sample Plugin Result",
+                "key": "horeca-query-result",
+                "title": "Horeca Vergunningen Query Resultaat",
                 "width": 2,
                 "highContrast": true,
                 "properties": {
@@ -13,26 +13,17 @@
                         [
                             {
                                 "key": "name",
-                                "title": "Name",
+                                "title": "Naam",
                                 "value": "doc:/name",
                                 "displayProperties": {
                                     "type": "text",
-                                    "hideWhenEmpty": false
+                                    "hideWhenEmpty": true
                                 }
                             },
                             {
-                                "key": "message",
-                                "title": "Message",
-                                "value": "doc:/message",
-                                "displayProperties": {
-                                    "type": "text",
-                                    "hideWhenEmpty": false
-                                }
-                            },
-                            {
-                                "key": "apiResult",
-                                "title": "API Result",
-                                "value": "doc:/apiResult",
+                                "key": "horecaData",
+                                "title": "Query resultaat (horeca_vergunning)",
+                                "value": "doc:/horecaData",
                                 "displayProperties": {
                                     "type": "text",
                                     "hideWhenEmpty": false

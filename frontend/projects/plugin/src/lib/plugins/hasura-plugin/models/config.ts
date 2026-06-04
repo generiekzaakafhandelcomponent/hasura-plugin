@@ -29,17 +29,16 @@ interface TrackTablesActionConfig {
   tables: Array<string>;
 }
 
-interface ExecuteGraphQlQueryActionConfig {
+interface GraphQlByInputActionConfig {
   query: string;
   variables?: string;
   resultProcessVariableName: string;
 }
 
-interface ExecuteGraphQlMutationActionConfig {
+interface MutationByProcessVariableActionConfig {
   mutation: string;
-  variables?: string;
-  objectsVariableName?: string;
+  objectsVariableName: string;
   resultProcessVariableName?: string;
 }
 
-export {HasuraPluginConfig, RunSqlActionConfig, TrackTablesActionConfig, ExecuteGraphQlQueryActionConfig, ExecuteGraphQlMutationActionConfig};
+export {HasuraPluginConfig, RunSqlActionConfig, TrackTablesActionConfig, GraphQlByInputActionConfig, MutationByProcessVariableActionConfig};

@@ -6,7 +6,7 @@
             "type": "htmlelement",
             "input": false,
             "label": "Instructions",
-            "content": "Start a new example case. The sample plugin will call a Time API during execution.",
+            "content": "Start dit proces om de eerste 10 horeca vergunningen op te halen via de Hasura GraphQL API.",
             "tableView": false,
             "refreshOnChange": false
         },
@@ -22,7 +22,7 @@
             "key": "submit",
             "type": "button",
             "input": true,
-            "label": "Start",
+            "label": "Starten",
             "tableView": false,
             "disableOnInvalid": true
         }

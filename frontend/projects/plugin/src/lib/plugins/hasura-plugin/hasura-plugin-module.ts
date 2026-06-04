@@ -21,24 +21,24 @@ import {FormModule, InputModule as ValtimoInputModule, EditorModule, CarbonMulti
 import {HasuraPluginConfigurationComponent} from "./components/hasura-plugin-configuration/hasura-plugin-configuration.component";
 import {RunSqlActionConfigurationComponent} from "./components/run-sql-action-configuration/run-sql-action-configuration.component";
 import {TrackTablesActionConfigurationComponent} from "./components/track-tables-action-configuration/track-tables-action-configuration.component";
-import {ExecuteGraphQlQueryActionConfigurationComponent} from "./components/execute-graphql-query-action-configuration/execute-graphql-query-action-configuration.component";
-import {ExecuteGraphQlMutationActionConfigurationComponent} from "./components/execute-graphql-mutation-action-configuration/execute-graphql-mutation-action-configuration.component";
+import {GraphQlByInputActionConfigurationComponent} from "./components/graphql-by-input-action-configuration/graphql-by-input-action-configuration.component";
+import {MutationByProcessVariableActionConfigurationComponent} from "./components/mutation-by-process-variable-action-configuration/mutation-by-process-variable-action-configuration.component";
 
 @NgModule({
   declarations: [
     HasuraPluginConfigurationComponent,
     RunSqlActionConfigurationComponent,
     TrackTablesActionConfigurationComponent,
-    ExecuteGraphQlQueryActionConfigurationComponent,
-    ExecuteGraphQlMutationActionConfigurationComponent,
+    GraphQlByInputActionConfigurationComponent,
+    MutationByProcessVariableActionConfigurationComponent,
   ],
   imports: [CommonModule, PluginTranslatePipeModule, FormModule, ValtimoInputModule, EditorModule, CarbonMultiInputModule],
   exports: [
     HasuraPluginConfigurationComponent,
     RunSqlActionConfigurationComponent,
     TrackTablesActionConfigurationComponent,
-    ExecuteGraphQlQueryActionConfigurationComponent,
-    ExecuteGraphQlMutationActionConfigurationComponent,
+    GraphQlByInputActionConfigurationComponent,
+    MutationByProcessVariableActionConfigurationComponent,
   ],
 })
 export class HasuraPluginModule {

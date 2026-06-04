@@ -48,8 +48,8 @@ open class HasuraPlugin(
     lateinit var hasuraAdminSecret: String
 
     @PluginAction(
-        key = "run-sql",
-        title = "Run SQL",
+        key = "execute-sql-files",
+        title = "Execute SQL Files",
         description = "Reads SQL files from the HASURA_DDL_DIR environment variable (default: $DEFAULT_DDL_DIR) and executes them in order via the Hasura Schema API",
         activityTypes = [SERVICE_TASK_START],
     )
@@ -80,12 +80,12 @@ open class HasuraPlugin(
     }
 
     @PluginAction(
-        key = "execute-graphql-query",
-        title = "Execute GraphQL Query",
+        key = "graphql-by-input",
+        title = "GraphQL by Input",
         description = "Executes a GraphQL query and stores the result in a process variable",
         activityTypes = [SERVICE_TASK_START],
     )
-    open fun executeGraphQlQuery(
+    open fun graphQlByInput(
         execution: DelegateExecution,
         @PluginActionProperty query: String,
         @PluginActionProperty variables: String?,
@@ -97,24 +97,21 @@ open class HasuraPlugin(
     }
 
     @PluginAction(
-        key = "execute-graphql-mutation",
-        title = "Execute GraphQL Mutation",
-        description = "Executes a GraphQL mutation. If objectsVariableName is set, reads a list from that process variable and passes it as {\"objects\": list}; otherwise uses the variables JSON.",
+        key = "mutation-by-process-variable",
+        title = "Mutation by Process Variable",
+        description = "Executes a GraphQL mutation, passing the value of a process variable as {\"objects\": value}.",
         activityTypes = [SERVICE_TASK_START],
     )
-    open fun executeGraphQlMutation(
+    open fun mutationByProcessVariable(
         execution: DelegateExecution,
         @PluginActionProperty mutation: String,
-        @PluginActionProperty variables: String?,
-        @PluginActionProperty objectsVariableName: String?,
+        @PluginActionProperty objectsVariableName: String,
         @PluginActionProperty resultProcessVariableName: String?,
     ) {
         logger.info { "Executing GraphQL mutation via Hasura at $hasuraUrl" }
-        val vars = if (objectsVariableName != null) {
-            mapOf("objects" to execution.getVariable(objectsVariableName))
-        } else {
-            parseVariables(variables)
-        }
+        val raw = execution.getVariable(objectsVariableName)
+        val objects = if (raw is String) objectMapper.readValue(raw, object : TypeReference<Any>() {}) else raw
+        val vars = mapOf("objects" to objects)
         val data = hasuraClient.executeGraphQlQuery(hasuraUrl, hasuraAdminSecret, mutation, vars)
         resultProcessVariableName?.let { execution.setVariable(it, data) }
     }
