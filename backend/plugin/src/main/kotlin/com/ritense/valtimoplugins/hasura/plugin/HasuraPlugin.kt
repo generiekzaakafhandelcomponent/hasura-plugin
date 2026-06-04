@@ -57,10 +57,16 @@ open class HasuraPlugin(
         execution: DelegateExecution,
         @PluginActionProperty files: List<String>,
     ) {
-        val ddlDir = System.getenv("HASURA_DDL_DIR") ?: DEFAULT_DDL_DIR
+        val ddlDir = Path(System.getenv("HASURA_DDL_DIR") ?: DEFAULT_DDL_DIR).normalize()
         files.forEach { fileName ->
-            logger.info { "Executing $ddlDir/$fileName via Hasura at $hasuraUrl" }
-            val sql = Path("$ddlDir/$fileName").readText()
+            val resolved = ddlDir.resolve(fileName).normalize()
+            require(resolved.startsWith(ddlDir)) { "File '$fileName' escapes DDL directory" }
+            logger.info { "Executing $resolved via Hasura at $hasuraUrl" }
+            val sql = try {
+                resolved.readText()
+            } catch (e: Exception) {
+                throw IllegalStateException("Could not read SQL file '$resolved': ${e.message}", e)
+            }
             hasuraClient.runSql(hasuraUrl, hasuraAdminSecret, sql)
         }
     }
