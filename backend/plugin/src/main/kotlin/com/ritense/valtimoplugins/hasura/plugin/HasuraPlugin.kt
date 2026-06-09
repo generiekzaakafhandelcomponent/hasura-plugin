@@ -88,7 +88,7 @@ open class HasuraPlugin(
     @PluginAction(
         key = "graphql-by-input",
         title = "GraphQL by Input",
-        description = "Executes a GraphQL query and stores the result in a process variable",
+        description = "Executes a GraphQL query and stores the result in given named process variable",
         activityTypes = [SERVICE_TASK_START],
     )
     open fun graphQlByInput(
