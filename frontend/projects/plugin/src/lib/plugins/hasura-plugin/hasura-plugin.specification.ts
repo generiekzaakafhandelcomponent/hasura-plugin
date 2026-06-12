@@ -66,7 +66,7 @@ const hasuraPluginSpecification: PluginSpecification = {
       "mutation-by-process-variable": "Mutation by Process Variable",
       mutation: "GraphQL mutation",
       variables: "Variables (JSON)",
-      objectsVariableName: "Process variable containing objects",
+      objectsVariableName: "Process variable containing objects for mutation",
       resultProcessVariableName: "Result process variable",
     },
   },
