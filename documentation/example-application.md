@@ -1,21 +1,20 @@
 # Example Application
 
-This project also contains a working example application which is meant to showcase the plugin.
+This project includes a working example application that demonstrates the Hasura plugin integrated with Valtimo, using a horeca-vergunningen (hospitality licence) case as a showcase.
 
 ## Running the example application
 
-All commands below should be run from the **project root** directory.
+All commands below should be run from the **project root** directory unless stated otherwise.
 
 ### Prerequisites
 
 - Java 21
-- [Docker (Desktop)](https://www.docker.com/products/docker-desktop/)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- Node.js 20 (use `nvm use 20`)
 
-### Start docker
+### Start Docker
 
-Make sure docker is running.
-
-Start with gradle script:
+Start the supporting services (PostgreSQL, Hasura, Keycloak):
 
 ```shell
 ./gradlew :backend:app:composeUp
@@ -23,13 +22,13 @@ Start with gradle script:
 
 ### Start backend
 
-By gradle script:
-
 ```shell
 ./gradlew :backend:app:bootRun
 ```
 
 ### Start frontend
+
+Run the following from the `frontend/` directory:
 
 ```shell
 nvm use 20
@@ -38,6 +37,8 @@ npm install
 npm run build
 npm start
 ```
+
+The frontend dev server proxies API calls to the backend via `conf/proxy.conf.json`.
 
 ### Keycloak users
 
