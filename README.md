@@ -6,7 +6,7 @@ A [Valtimo](https://www.valtimo.nl) plugin that integrates with [Hasura](https:/
 
 | Action | Key | Description |
 |---|---|---|
-| Execute SQL Files | `execute-sql-files` | Reads `.sql` files from a configurable directory and executes them in order via the Hasura Schema API (`/v2/query`) |
+| Execute SQL | `execute-sql` | Executes a SQL statement configured inline via the Hasura Schema API (`/v2/query`) |
 | Track Tables | `track-tables` | Tracks one or more PostgreSQL tables in Hasura so they are exposed via the GraphQL API (`/v1/metadata`) |
 | GraphQL by Input | `graphql-by-input` | Executes a GraphQL query with optional variables and stores the result in a named process variable |
 | Mutation by Process Variable | `mutation-by-process-variable` | Executes a GraphQL mutation, passing the value of a process variable as `{"objects": value}` |
@@ -18,15 +18,13 @@ A [Valtimo](https://www.valtimo.nl) plugin that integrates with [Hasura](https:/
 | Hasura URL | `hasuraUrl` | No | Base URL of the Hasura instance, e.g. `http://hasura:8080` |
 | Admin Secret | `hasuraAdminSecret` | Yes | The `x-hasura-admin-secret` used to authenticate all requests |
 
-## Execute SQL Files
-
-SQL files are resolved from a base directory configured via the `HASURA_DDL_DIR` environment variable (default: `/opt/hasura/ddl`). File names must not escape that directory (path traversal is rejected).
+## Execute SQL
 
 **Action properties:**
 
 | Property | Type | Description |
 |---|---|---|
-| `files` | `List<String>` | File names (relative to `HASURA_DDL_DIR`) to execute in order |
+| `sql` | `String` | The SQL statement to execute, configured inline in the process link |
 
 ## Track Tables
 

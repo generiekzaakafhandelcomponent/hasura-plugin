@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Hasura Plugin allows Valtimo BPMN process tasks to interact with a [Hasura](https://hasura.io)-managed PostgreSQL database. It exposes four service task actions: executing SQL files, tracking tables, running GraphQL queries, and running GraphQL mutations.
+The Hasura Plugin allows Valtimo BPMN process tasks to interact with a [Hasura](https://hasura.io)-managed PostgreSQL database. It exposes four service task actions: executing inline SQL, tracking tables, running GraphQL queries, and running GraphQL mutations.
 
 ## Plugin Configuration
 
@@ -56,17 +56,15 @@ import {
 
 ## Actions
 
-### Execute SQL Files
+### Execute SQL
 
-**Key:** `execute-sql-files`
+**Key:** `execute-sql`
 
-Reads one or more `.sql` files from the directory configured via the `HASURA_DDL_DIR` environment variable (default: `/opt/hasura/ddl`) and executes them in order via the Hasura Schema API (`POST /v2/query`).
+Executes a SQL statement configured inline via the Hasura Schema API (`POST /v2/query`). The SQL is entered directly in the process link configuration using a code editor.
 
 | Property | Type | Required | Description |
 |---|---|---|---|
-| `files` | `List<String>` | Yes | File names relative to `HASURA_DDL_DIR`, executed in the given order |
-
-File names that would escape the DDL directory (path traversal) are rejected.
+| `sql` | `String` | Yes | The SQL statement to execute |
 
 ---
 
