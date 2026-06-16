@@ -26,8 +26,6 @@ import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_STA
 import com.ritense.valtimoplugins.hasura.client.HasuraClient
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.operaton.bpm.engine.delegate.DelegateExecution
-import kotlin.io.path.Path
-import kotlin.io.path.readText
 
 private val logger = KotlinLogging.logger {}
 
@@ -48,27 +46,17 @@ open class HasuraPlugin(
     lateinit var hasuraAdminSecret: String
 
     @PluginAction(
-        key = "execute-sql-files",
-        title = "Execute SQL Files",
-        description = "Reads SQL files from the HASURA_DDL_DIR environment variable (default: $DEFAULT_DDL_DIR) and executes them in order via the Hasura Schema API",
+        key = "execute-sql",
+        title = "Execute SQL",
+        description = "Executes the given SQL statement via the Hasura Schema API",
         activityTypes = [SERVICE_TASK_START],
     )
     open fun runSql(
         execution: DelegateExecution,
-        @PluginActionProperty files: List<String>,
+        @PluginActionProperty sql: String,
     ) {
-        val ddlDir = Path(System.getenv("HASURA_DDL_DIR") ?: DEFAULT_DDL_DIR).normalize()
-        files.forEach { fileName ->
-            val resolved = ddlDir.resolve(fileName).normalize()
-            require(resolved.startsWith(ddlDir)) { "File '$fileName' escapes DDL directory" }
-            logger.info { "Executing $resolved via Hasura at $hasuraUrl" }
-            val sql = try {
-                resolved.readText()
-            } catch (e: Exception) {
-                throw IllegalStateException("Could not read SQL file '$resolved': ${e.message}", e)
-            }
-            hasuraClient.runSql(hasuraUrl, hasuraAdminSecret, sql)
-        }
+        logger.info { "Executing SQL via Hasura at $hasuraUrl" }
+        hasuraClient.runSql(hasuraUrl, hasuraAdminSecret, sql)
     }
 
     @PluginAction(
@@ -129,7 +117,4 @@ open class HasuraPlugin(
             emptyMap()
         }
 
-    companion object {
-        const val DEFAULT_DDL_DIR = "/opt/hasura/ddl"
-    }
 }

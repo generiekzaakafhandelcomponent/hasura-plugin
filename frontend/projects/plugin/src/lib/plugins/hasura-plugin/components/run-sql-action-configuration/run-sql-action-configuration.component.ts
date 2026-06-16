@@ -16,7 +16,8 @@
 
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from "@angular/core";
 import {FunctionConfigurationComponent} from "@valtimo/plugin";
-import {BehaviorSubject, combineLatest, map, Observable, Subscription, take} from "rxjs";
+import {EditorModel} from "@valtimo/components";
+import {BehaviorSubject, combineLatest, Observable, Subscription, take} from "rxjs";
 import {RunSqlActionConfig} from "../../models";
 
 @Component({
@@ -32,43 +33,46 @@ export class RunSqlActionConfigurationComponent implements FunctionConfiguration
   @Output() valid: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() configuration: EventEmitter<RunSqlActionConfig> = new EventEmitter<RunSqlActionConfig>();
 
-  defaultFiles$!: Observable<Array<{key: string; value: string}> | undefined>;
+  readonly sqlModel$ = new BehaviorSubject<EditorModel>({value: "", language: "sql"});
 
-  private saveSubscription!: Subscription;
-  private readonly formValue$ = new BehaviorSubject<RunSqlActionConfig | null>(null);
+  private readonly sql$ = new BehaviorSubject<string>("");
   private readonly valid$ = new BehaviorSubject<boolean>(false);
+  private saveSubscription!: Subscription;
+  private prefillSubscription!: Subscription;
 
   ngOnInit(): void {
-    this.defaultFiles$ = this.prefillConfiguration$.pipe(
-      map(config => config?.files?.map(value => ({key: value, value: value})))
-    );
-    this.openSaveSubscription();
+    this.prefillSubscription = this.prefillConfiguration$?.pipe(take(1)).subscribe(config => {
+      if (config) {
+        this.sql$.next(config.sql ?? "");
+        this.sqlModel$.next({value: config.sql ?? "", language: "sql"});
+      }
+      this.emitValid();
+    });
+
+    this.saveSubscription = this.save$?.subscribe(() => {
+      combineLatest([this.sql$, this.valid$])
+        .pipe(take(1))
+        .subscribe(([sql, valid]) => {
+          if (valid) {
+            this.configuration.emit({sql});
+          }
+        });
+    });
   }
 
   ngOnDestroy(): void {
     this.saveSubscription?.unsubscribe();
+    this.prefillSubscription?.unsubscribe();
   }
 
-  formValueChange(formValue: RunSqlActionConfig): void {
-    this.formValue$.next(formValue);
-    this.handleValid(formValue);
+  onSqlChange(value: string): void {
+    this.sql$.next(value);
+    this.emitValid();
   }
 
-  private handleValid(formValue: RunSqlActionConfig): void {
-    const valid = !!(formValue?.files?.length);
+  private emitValid(): void {
+    const valid = !!(this.sql$.value?.trim());
     this.valid$.next(valid);
     this.valid.emit(valid);
-  }
-
-  private openSaveSubscription(): void {
-    this.saveSubscription = this.save$?.subscribe(() => {
-      combineLatest([this.formValue$, this.valid$])
-        .pipe(take(1))
-        .subscribe(([formValue, valid]) => {
-          if (valid) {
-            this.configuration.emit(formValue!);
-          }
-        });
-    });
   }
 }

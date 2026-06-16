@@ -60,10 +60,6 @@ Once the plugin is installed, create a plugin configuration in the Valtimo admin
 | **Hasura URL** | Base URL of the Hasura instance, e.g. `http://hasura:8080` |
 | **Admin Secret** | The `x-hasura-admin-secret` credential |
 
-## SQL file directory
-
-The **Execute SQL Files** action resolves files relative to a base directory. Set the `HASURA_DDL_DIR` environment variable on your backend container to the directory containing your `.sql` files (default: `/opt/hasura/ddl`).
-
 ## Further reading
 
 - [Plugin reference](plugin.md) — all actions and their properties
