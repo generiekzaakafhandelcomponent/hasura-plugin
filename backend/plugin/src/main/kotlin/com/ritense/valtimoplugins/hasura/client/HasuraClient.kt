@@ -17,11 +17,15 @@
 package com.ritense.valtimoplugins.hasura.client
 
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.graphql.client.HttpSyncGraphQlClient
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
+import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestClient
 import java.util.concurrent.ConcurrentHashMap
+
+private val logger = KotlinLogging.logger {}
 
 @SkipComponentScan
 @Component
@@ -45,23 +49,22 @@ class HasuraClient(
             .body(HasuraRunSqlResponse::class.java)
             ?: throw IllegalStateException("No response received from Hasura")
 
-    fun trackTables(
-        hasuraUrl: String,
-        adminSecret: String,
-        tables: List<String>,
-    ) {
-        val requests =
-            tables.map { tableName ->
-                HasuraTrackTableRequest(args = HasuraTrackTableArgs(table = HasuraTableRef(name = tableName)))
-            }
-        restClient
-            .post()
-            .uri("$hasuraUrl/v1/metadata")
-            .header("x-hasura-admin-secret", adminSecret)
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(HasuraBulkRequest(args = requests))
-            .retrieve()
-            .toBodilessEntity()
+    fun trackTables(hasuraUrl: String, adminSecret: String, tables: List<String>) {
+        val requests = tables.map { tableName ->
+            HasuraTrackTableRequest(args = HasuraTrackTableArgs(table = HasuraTableRef(name = tableName)))
+        }
+        try {
+            restClient
+                .post()
+                .uri("$hasuraUrl/v1/metadata")
+                .header("x-hasura-admin-secret", adminSecret)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(HasuraBulkRequest(args = requests))
+                .retrieve()
+                .toBodilessEntity()
+        } catch (e: HttpClientErrorException.BadRequest) {
+            logger.info { "One or more tables already tracked in Hasura, skipping: ${e.responseBodyAsString}" }
+        }
     }
 
     fun executeGraphQlQuery(
