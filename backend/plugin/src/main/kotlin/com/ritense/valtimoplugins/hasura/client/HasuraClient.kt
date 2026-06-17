@@ -30,7 +30,11 @@ class HasuraClient(
 ) {
     private val graphQlClientCache = ConcurrentHashMap<String, HttpSyncGraphQlClient>()
 
-    fun runSql(hasuraUrl: String, adminSecret: String, sql: String): HasuraRunSqlResponse =
+    fun runSql(
+        hasuraUrl: String,
+        adminSecret: String,
+        sql: String,
+    ): HasuraRunSqlResponse =
         restClient
             .post()
             .uri("$hasuraUrl/v2/query")
@@ -41,10 +45,15 @@ class HasuraClient(
             .body(HasuraRunSqlResponse::class.java)
             ?: throw IllegalStateException("No response received from Hasura")
 
-    fun trackTables(hasuraUrl: String, adminSecret: String, tables: List<String>) {
-        val requests = tables.map { tableName ->
-            HasuraTrackTableRequest(args = HasuraTrackTableArgs(table = HasuraTableRef(name = tableName)))
-        }
+    fun trackTables(
+        hasuraUrl: String,
+        adminSecret: String,
+        tables: List<String>,
+    ) {
+        val requests =
+            tables.map { tableName ->
+                HasuraTrackTableRequest(args = HasuraTrackTableArgs(table = HasuraTableRef(name = tableName)))
+            }
         restClient
             .post()
             .uri("$hasuraUrl/v1/metadata")
@@ -61,16 +70,20 @@ class HasuraClient(
         query: String,
         variables: Map<String, Any?>,
     ): Map<String, Any>? {
-        val client = graphQlClientCache.computeIfAbsent("$hasuraUrl|$adminSecret") {
-            HttpSyncGraphQlClient.builder(restClient)
-                .url("$hasuraUrl/v1/graphql")
-                .header("x-hasura-admin-secret", adminSecret)
-                .build()
-        }
+        val client =
+            graphQlClientCache.computeIfAbsent("$hasuraUrl|$adminSecret") {
+                HttpSyncGraphQlClient
+                    .builder(restClient)
+                    .url("$hasuraUrl/v1/graphql")
+                    .header("x-hasura-admin-secret", adminSecret)
+                    .build()
+            }
 
-        val response = client.document(query)
-            .variables(variables)
-            .executeSync()
+        val response =
+            client
+                .document(query)
+                .variables(variables)
+                .executeSync()
 
         if (response.errors.isNotEmpty()) {
             throw IllegalStateException("GraphQL errors: ${response.errors.joinToString { it.message }}")

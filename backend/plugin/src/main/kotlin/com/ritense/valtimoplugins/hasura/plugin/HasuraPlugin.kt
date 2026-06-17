@@ -50,7 +50,7 @@ open class HasuraPlugin(
     @PluginAction(
         key = "execute-sql-files",
         title = "Execute SQL Files",
-        description = "Reads SQL files from the HASURA_DDL_DIR environment variable (default: $DEFAULT_DDL_DIR) and executes them in order via the Hasura Schema API",
+        description = "Reads SQL files from HASURA_DDL_DIR env var (default: $DEFAULT_DDL_DIR)",
         activityTypes = [SERVICE_TASK_START],
     )
     open fun runSql(
@@ -62,11 +62,12 @@ open class HasuraPlugin(
             val resolved = ddlDir.resolve(fileName).normalize()
             require(resolved.startsWith(ddlDir)) { "File '$fileName' escapes DDL directory" }
             logger.info { "Executing $resolved via Hasura at $hasuraUrl" }
-            val sql = try {
-                resolved.readText()
-            } catch (e: Exception) {
-                throw IllegalStateException("Could not read SQL file '$resolved': ${e.message}", e)
-            }
+            val sql =
+                try {
+                    resolved.readText()
+                } catch (e: Exception) {
+                    throw IllegalStateException("Could not read SQL file '$resolved': ${e.message}", e)
+                }
             hasuraClient.runSql(hasuraUrl, hasuraAdminSecret, sql)
         }
     }
