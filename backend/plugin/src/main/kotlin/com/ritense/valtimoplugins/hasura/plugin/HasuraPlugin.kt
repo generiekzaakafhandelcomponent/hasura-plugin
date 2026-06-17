@@ -116,5 +116,4 @@ open class HasuraPlugin(
         } else {
             emptyMap()
         }
-
 }

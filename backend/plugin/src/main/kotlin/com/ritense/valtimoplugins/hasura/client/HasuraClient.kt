@@ -49,10 +49,15 @@ class HasuraClient(
             .body(HasuraRunSqlResponse::class.java)
             ?: throw IllegalStateException("No response received from Hasura")
 
-    fun trackTables(hasuraUrl: String, adminSecret: String, tables: List<String>) {
-        val requests = tables.map { tableName ->
-            HasuraTrackTableRequest(args = HasuraTrackTableArgs(table = HasuraTableRef(name = tableName)))
-        }
+    fun trackTables(
+        hasuraUrl: String,
+        adminSecret: String,
+        tables: List<String>,
+    ) {
+        val requests =
+            tables.map { tableName ->
+                HasuraTrackTableRequest(args = HasuraTrackTableArgs(table = HasuraTableRef(name = tableName)))
+            }
         try {
             restClient
                 .post()
