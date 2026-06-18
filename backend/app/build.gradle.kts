@@ -1,11 +1,13 @@
 val kotlinLoggingVersion: String by project
 val nettyResolverDnsNativeMacOsVersion: String by project
 
-dependencies {
-    implementation(platform("com.ritense.valtimo:valtimo-dependency-versions"))
+val valtimoVersion: String by project
 
-    implementation("com.ritense.valtimo:valtimo-dependencies")
-    implementation("com.ritense.valtimo:local-mail")
+dependencies {
+    implementation(platform("com.ritense.valtimo:valtimo-dependency-versions:$valtimoVersion"))
+
+    implementation("com.ritense.valtimo:valtimo-dependencies:$valtimoVersion")
+    implementation("com.ritense.valtimo:local-mail:$valtimoVersion")
 
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.postgresql:postgresql")
@@ -33,7 +35,6 @@ dockerCompose {
 }
 
 tasks.bootRun {
-   // dependsOn("composeUp")
     systemProperty("spring.profiles.include", "dev")
     val t = this
     doFirst {
