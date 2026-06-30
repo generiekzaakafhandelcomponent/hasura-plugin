@@ -73,7 +73,8 @@ subprojects {
         }
 
         dependencies {
-            implementation(platform("com.ritense.valtimo:valtimo-dependency-versions:$valtimoVersion"))
+            compileOnly(platform("com.ritense.valtimo:valtimo-dependency-versions:$valtimoVersion"))
+            testImplementation(platform("com.ritense.valtimo:valtimo-dependency-versions:$valtimoVersion"))
             implementation("cn.lalaki.central:central:$lalakiCentralVersion")
         }
 

@@ -26,7 +26,6 @@ import org.springframework.web.client.RestClient
 
 @AutoConfiguration
 class HasuraAutoConfiguration {
-
     @Bean
     @ConditionalOnMissingBean(HasuraClient::class)
     fun hasuraClient(): HasuraClient = HasuraClient(RestClient.create())
