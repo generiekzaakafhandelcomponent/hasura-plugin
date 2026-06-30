@@ -32,7 +32,7 @@ private val logger = KotlinLogging.logger {}
 @Plugin(
     key = "hasura-plugin",
     title = "Hasura Plugin",
-    description = "Interact with a Hasura-managed database via SQL and GraphQL",
+    description = "Interact with a Hasura-managed database via GraphQL",
 )
 open class HasuraPlugin(
     private val hasuraClient: HasuraClient,
