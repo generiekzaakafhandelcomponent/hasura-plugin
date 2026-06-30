@@ -16,37 +16,3 @@
 
 package com.ritense.valtimoplugins.hasura.client
 
-data class HasuraRunSqlRequest(
-    val type: String = "run_sql",
-    val args: HasuraRunSqlArgs,
-)
-
-data class HasuraRunSqlArgs(
-    val source: String = "default",
-    val sql: String,
-)
-
-data class HasuraRunSqlResponse(
-    val result_type: String? = null,
-)
-
-data class HasuraTableRef(
-    val schema: String = "public",
-    val name: String,
-)
-
-data class HasuraTrackTableArgs(
-    val source: String = "default",
-    val table: HasuraTableRef,
-)
-
-data class HasuraTrackTableRequest(
-    val type: String = "pg_track_table",
-    val args: HasuraTrackTableArgs,
-)
-
-data class HasuraBulkRequest(
-    val type: String = "bulk",
-    val args: List<HasuraTrackTableRequest>,
-    val continue_on_error: Boolean = true,
-)

@@ -17,26 +17,20 @@
 import {NgModule} from "@angular/core";
 import {CommonModule} from "@angular/common";
 import {PluginTranslatePipeModule} from "@valtimo/plugin";
-import {FormModule, InputModule as ValtimoInputModule, EditorModule, CarbonMultiInputModule} from "@valtimo/components";
+import {FormModule, InputModule as ValtimoInputModule, EditorModule} from "@valtimo/components";
 import {HasuraPluginConfigurationComponent} from "./components/hasura-plugin-configuration/hasura-plugin-configuration.component";
-import {RunSqlActionConfigurationComponent} from "./components/run-sql-action-configuration/run-sql-action-configuration.component";
-import {TrackTablesActionConfigurationComponent} from "./components/track-tables-action-configuration/track-tables-action-configuration.component";
 import {GraphQlByInputActionConfigurationComponent} from "./components/graphql-by-input-action-configuration/graphql-by-input-action-configuration.component";
 import {MutationByProcessVariableActionConfigurationComponent} from "./components/mutation-by-process-variable-action-configuration/mutation-by-process-variable-action-configuration.component";
 
 @NgModule({
   declarations: [
     HasuraPluginConfigurationComponent,
-    RunSqlActionConfigurationComponent,
-    TrackTablesActionConfigurationComponent,
     GraphQlByInputActionConfigurationComponent,
     MutationByProcessVariableActionConfigurationComponent,
   ],
-  imports: [CommonModule, PluginTranslatePipeModule, FormModule, ValtimoInputModule, EditorModule, CarbonMultiInputModule],
+  imports: [CommonModule, PluginTranslatePipeModule, FormModule, ValtimoInputModule, EditorModule],
   exports: [
     HasuraPluginConfigurationComponent,
-    RunSqlActionConfigurationComponent,
-    TrackTablesActionConfigurationComponent,
     GraphQlByInputActionConfigurationComponent,
     MutationByProcessVariableActionConfigurationComponent,
   ],

@@ -46,34 +46,6 @@ open class HasuraPlugin(
     lateinit var hasuraAdminSecret: String
 
     @PluginAction(
-        key = "execute-sql",
-        title = "Execute SQL",
-        description = "Executes the given SQL statement via the Hasura Schema API",
-        activityTypes = [SERVICE_TASK_START],
-    )
-    open fun runSql(
-        execution: DelegateExecution,
-        @PluginActionProperty sql: String,
-    ) {
-        logger.info { "Executing SQL via Hasura at $hasuraUrl" }
-        hasuraClient.runSql(hasuraUrl, hasuraAdminSecret, sql)
-    }
-
-    @PluginAction(
-        key = "track-tables",
-        title = "Track Tables",
-        description = "Tracks tables in Hasura so they are exposed via the GraphQL API",
-        activityTypes = [SERVICE_TASK_START],
-    )
-    open fun trackTables(
-        execution: DelegateExecution,
-        @PluginActionProperty tables: List<String>,
-    ) {
-        logger.info { "Tracking tables in Hasura at $hasuraUrl: $tables" }
-        hasuraClient.trackTables(hasuraUrl, hasuraAdminSecret, tables)
-    }
-
-    @PluginAction(
         key = "graphql-by-input",
         title = "GraphQL by Input",
         description = "Executes a GraphQL query and stores the result in given named process variable",
