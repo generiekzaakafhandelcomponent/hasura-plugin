@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Hasura Plugin allows Valtimo BPMN process tasks to interact with a [Hasura](https://hasura.io)-managed PostgreSQL database. It exposes four service task actions: executing inline SQL, tracking tables, running GraphQL queries, and running GraphQL mutations.
+The Hasura Plugin allows Valtimo BPMN process tasks to interact with a [Hasura](https://hasura.io)-managed PostgreSQL database. It exposes two service task actions: running GraphQL queries and running GraphQL mutations.
 
 ## Plugin Configuration
 
@@ -55,30 +55,6 @@ import {
 ```
 
 ## Actions
-
-### Execute SQL
-
-**Key:** `execute-sql`
-
-Executes a SQL statement configured inline via the Hasura Schema API (`POST /v2/query`). The SQL is entered directly in the process link configuration using a code editor.
-
-| Property | Type | Required | Description |
-|---|---|---|---|
-| `sql` | `String` | Yes | The SQL statement to execute |
-
----
-
-### Track Tables
-
-**Key:** `track-tables`
-
-Tracks tables in the `public` schema of the `default` Hasura data source so they are exposed via the GraphQL API (`POST /v1/metadata`). Multiple tables are submitted in a single bulk request; errors on individual tables do not abort the rest.
-
-| Property | Type | Required | Description |
-|---|---|---|---|
-| `tables` | `List<String>` | Yes | Table names to track |
-
----
 
 ### GraphQL by Input
 

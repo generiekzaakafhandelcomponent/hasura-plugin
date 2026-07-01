@@ -32,7 +32,7 @@ private val logger = KotlinLogging.logger {}
 @Plugin(
     key = "hasura-plugin",
     title = "Hasura Plugin",
-    description = "Interact with a Hasura-managed database via SQL and GraphQL",
+    description = "Interact with a Hasura-managed database via GraphQL",
 )
 open class HasuraPlugin(
     private val hasuraClient: HasuraClient,
@@ -44,34 +44,6 @@ open class HasuraPlugin(
 
     @PluginProperty(key = "hasuraAdminSecret", secret = true)
     lateinit var hasuraAdminSecret: String
-
-    @PluginAction(
-        key = "execute-sql",
-        title = "Execute SQL",
-        description = "Executes the given SQL statement via the Hasura Schema API",
-        activityTypes = [SERVICE_TASK_START],
-    )
-    open fun runSql(
-        execution: DelegateExecution,
-        @PluginActionProperty sql: String,
-    ) {
-        logger.info { "Executing SQL via Hasura at $hasuraUrl" }
-        hasuraClient.runSql(hasuraUrl, hasuraAdminSecret, sql)
-    }
-
-    @PluginAction(
-        key = "track-tables",
-        title = "Track Tables",
-        description = "Tracks tables in Hasura so they are exposed via the GraphQL API",
-        activityTypes = [SERVICE_TASK_START],
-    )
-    open fun trackTables(
-        execution: DelegateExecution,
-        @PluginActionProperty tables: List<String>,
-    ) {
-        logger.info { "Tracking tables in Hasura at $hasuraUrl: $tables" }
-        hasuraClient.trackTables(hasuraUrl, hasuraAdminSecret, tables)
-    }
 
     @PluginAction(
         key = "graphql-by-input",

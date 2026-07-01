@@ -21,7 +21,6 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.graphql.client.HttpSyncGraphQlClient
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
-import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestClient
 import java.util.concurrent.ConcurrentHashMap
 
@@ -34,64 +33,22 @@ class HasuraClient(
 ) {
     private val graphQlClientCache = ConcurrentHashMap<String, HttpSyncGraphQlClient>()
 
-    fun runSql(
-        hasuraUrl: String,
-        adminSecret: String,
-        sql: String,
-    ): HasuraRunSqlResponse =
-        restClient
-            .post()
-            .uri("$hasuraUrl/v2/query")
-            .header("x-hasura-admin-secret", adminSecret)
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(HasuraRunSqlRequest(args = HasuraRunSqlArgs(sql = sql)))
-            .retrieve()
-            .body(HasuraRunSqlResponse::class.java)
-            ?: throw IllegalStateException("No response received from Hasura")
-
-    fun trackTables(
-        hasuraUrl: String,
-        adminSecret: String,
-        tables: List<String>,
-    ) {
-        val requests =
-            tables.map { tableName ->
-                HasuraTrackTableRequest(args = HasuraTrackTableArgs(table = HasuraTableRef(name = tableName)))
-            }
-        try {
-            restClient
-                .post()
-                .uri("$hasuraUrl/v1/metadata")
-                .header("x-hasura-admin-secret", adminSecret)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(HasuraBulkRequest(args = requests))
-                .retrieve()
-                .toBodilessEntity()
-        } catch (e: HttpClientErrorException.BadRequest) {
-            logger.info { "One or more tables already tracked in Hasura, skipping: ${e.responseBodyAsString}" }
-        }
-    }
-
     fun executeGraphQlQuery(
         hasuraUrl: String,
         adminSecret: String,
         query: String,
         variables: Map<String, Any?>,
     ): Map<String, Any>? {
-        val client =
-            graphQlClientCache.computeIfAbsent("$hasuraUrl|$adminSecret") {
-                HttpSyncGraphQlClient
-                    .builder(restClient)
-                    .url("$hasuraUrl/v1/graphql")
-                    .header("x-hasura-admin-secret", adminSecret)
-                    .build()
-            }
+        val client = graphQlClientCache.computeIfAbsent("$hasuraUrl|$adminSecret") {
+            HttpSyncGraphQlClient.builder(restClient)
+                .url("$hasuraUrl/v1/graphql")
+                .header("x-hasura-admin-secret", adminSecret)
+                .build()
+        }
 
-        val response =
-            client
-                .document(query)
-                .variables(variables)
-                .executeSync()
+        val response = client.document(query)
+            .variables(variables)
+            .executeSync()
 
         if (response.errors.isNotEmpty()) {
             throw IllegalStateException("GraphQL errors: ${response.errors.joinToString { it.message }}")

@@ -39,26 +39,6 @@ export class AppModule {}
 
 ## Actions
 
-### `execute-sql-files` — Execute SQL Files
-
-Reads SQL files from the directory specified by the `HASURA_DDL_DIR` environment variable (default: `/opt/hasura/ddl`) and executes them in order via the Hasura Schema API (`/v2/query`).
-
-| Property | Type            | Required | Description                                        |
-|----------|-----------------|----------|----------------------------------------------------|
-| `files`  | `Array<string>` | Yes      | File names (relative to `HASURA_DDL_DIR`) to execute in order |
-
----
-
-### `track-tables` — Track Tables
-
-Exposes one or more tables via the Hasura GraphQL API by tracking them through the Metadata API (`/v1/metadata`). Already-tracked tables are silently skipped.
-
-| Property | Type            | Required | Description                    |
-|----------|-----------------|----------|--------------------------------|
-| `tables` | `Array<string>` | Yes      | Table names to track in Hasura |
-
----
-
 ### `graphql-by-input` — GraphQL by Input
 
 Executes an arbitrary GraphQL query with optional static variables and stores the result in a process variable.

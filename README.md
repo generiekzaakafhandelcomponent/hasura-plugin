@@ -1,13 +1,11 @@
 # Hasura Plugin for Valtimo
 
-A [Valtimo](https://www.valtimo.nl) plugin that integrates with [Hasura](https://hasura.io) to interact with a Hasura-managed PostgreSQL database from BPMN process tasks. It exposes SQL execution, table tracking, and GraphQL query/mutation actions as service task actions.
+A [Valtimo](https://www.valtimo.nl) plugin that integrates with [Hasura](https://hasura.io) to interact with a Hasura-managed PostgreSQL database from BPMN process tasks. It allows you to do GraphQL query/mutation actions as service task actions.
 
 ## Actions
 
 | Action | Key | Description |
 |---|---|---|
-| Execute SQL | `execute-sql` | Executes a SQL statement configured inline via the Hasura Schema API (`/v2/query`) |
-| Track Tables | `track-tables` | Tracks one or more PostgreSQL tables in Hasura so they are exposed via the GraphQL API (`/v1/metadata`) |
 | GraphQL by Input | `graphql-by-input` | Executes a GraphQL query with optional variables and stores the result in a named process variable |
 | Mutation by Process Variable | `mutation-by-process-variable` | Executes a GraphQL mutation, passing the value of a process variable as `{"objects": value}` |
 
@@ -17,24 +15,6 @@ A [Valtimo](https://www.valtimo.nl) plugin that integrates with [Hasura](https:/
 |---|---|---|---|
 | Hasura URL | `hasuraUrl` | No | Base URL of the Hasura instance, e.g. `http://hasura:8080` |
 | Admin Secret | `hasuraAdminSecret` | Yes | The `x-hasura-admin-secret` used to authenticate all requests |
-
-## Execute SQL
-
-**Action properties:**
-
-| Property | Type | Description |
-|---|---|---|
-| `sql` | `String` | The SQL statement to execute, configured inline in the process link |
-
-## Track Tables
-
-Tracks tables in the `public` schema of the `default` Hasura data source. Uses a bulk metadata request so multiple tables are tracked in a single call; errors on individual tables are skipped (`continue_on_error: true`).
-
-**Action properties:**
-
-| Property | Type | Description |
-|---|---|---|
-| `tables` | `List<String>` | Table names to track |
 
 ## GraphQL by Input
 

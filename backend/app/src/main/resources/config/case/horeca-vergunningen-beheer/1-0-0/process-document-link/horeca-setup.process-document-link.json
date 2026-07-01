@@ -1,7 +1,0 @@
-[
-    {
-        "processDefinitionKey": "horeca-setup",
-        "canInitializeDocument": true,
-        "startableByUser": true
-    }
-]

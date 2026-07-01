@@ -17,8 +17,6 @@
 import {PluginSpecification} from "@valtimo/plugin";
 import {HasuraPluginConfigurationComponent} from "./components/hasura-plugin-configuration/hasura-plugin-configuration.component";
 import {HASURA_PLUGIN_LOGO_BASE64} from "./assets";
-import {RunSqlActionConfigurationComponent} from "./components/run-sql-action-configuration/run-sql-action-configuration.component";
-import {TrackTablesActionConfigurationComponent} from "./components/track-tables-action-configuration/track-tables-action-configuration.component";
 import {GraphQlByInputActionConfigurationComponent} from "./components/graphql-by-input-action-configuration/graphql-by-input-action-configuration.component";
 import {MutationByProcessVariableActionConfigurationComponent} from "./components/mutation-by-process-variable-action-configuration/mutation-by-process-variable-action-configuration.component";
 
@@ -27,22 +25,16 @@ const hasuraPluginSpecification: PluginSpecification = {
   pluginConfigurationComponent: HasuraPluginConfigurationComponent,
   pluginLogoBase64: HASURA_PLUGIN_LOGO_BASE64,
   functionConfigurationComponents: {
-    "execute-sql": RunSqlActionConfigurationComponent,
-    "track-tables": TrackTablesActionConfigurationComponent,
     "graphql-by-input": GraphQlByInputActionConfigurationComponent,
     "mutation-by-process-variable": MutationByProcessVariableActionConfigurationComponent,
   },
   pluginTranslations: {
     nl: {
       title: "Hasura Plugin",
-      description: "Interactie met een Hasura-beheerde database via SQL en GraphQL.",
+      description: "Interactie met een Hasura-beheerde database via GraphQL.",
       configurationTitle: "Configuratienaam",
       hasuraUrl: "Hasura URL",
       hasuraAdminSecret: "Hasura Admin Secret",
-      "execute-sql": "SQL uitvoeren",
-      sql: "SQL",
-      "track-tables": "Tabellen volgen",
-      tables: "Te volgen tabellen",
       "graphql-by-input": "GraphQL via invoer",
       query: "GraphQL query",
       "mutation-by-process-variable": "Mutatie via procesvariabele",
@@ -53,14 +45,10 @@ const hasuraPluginSpecification: PluginSpecification = {
     },
     en: {
       title: "Hasura Plugin",
-      description: "Interact with a Hasura-managed database via SQL and GraphQL.",
+      description: "Interact with a Hasura-managed database via GraphQL.",
       configurationTitle: "Configuration Name",
       hasuraUrl: "Hasura URL",
       hasuraAdminSecret: "Hasura Admin Secret",
-      "execute-sql": "Execute SQL",
-      sql: "SQL",
-      "track-tables": "Track Tables",
-      tables: "Tables to track",
       "graphql-by-input": "GraphQL by Input",
       query: "GraphQL query",
       "mutation-by-process-variable": "Mutation by Process Variable",

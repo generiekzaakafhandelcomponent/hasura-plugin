@@ -21,14 +21,6 @@ interface HasuraPluginConfig extends PluginConfigurationData {
   hasuraAdminSecret: string;
 }
 
-interface RunSqlActionConfig {
-  sql: string;
-}
-
-interface TrackTablesActionConfig {
-  tables: Array<string>;
-}
-
 interface GraphQlByInputActionConfig {
   query: string;
   variables?: string;
@@ -41,4 +33,4 @@ interface MutationByProcessVariableActionConfig {
   resultProcessVariableName?: string;
 }
 
-export {HasuraPluginConfig, RunSqlActionConfig, TrackTablesActionConfig, GraphQlByInputActionConfig, MutationByProcessVariableActionConfig};
+export {HasuraPluginConfig, GraphQlByInputActionConfig, MutationByProcessVariableActionConfig};
