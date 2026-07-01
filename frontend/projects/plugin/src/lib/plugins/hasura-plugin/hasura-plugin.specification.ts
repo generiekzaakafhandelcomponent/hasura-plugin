@@ -31,7 +31,7 @@ const hasuraPluginSpecification: PluginSpecification = {
   pluginTranslations: {
     nl: {
       title: "Hasura Plugin",
-      description: "Interactie met een Hasura-beheerde database via SQL en GraphQL.",
+      description: "Interactie met een Hasura-beheerde database via GraphQL.",
       configurationTitle: "Configuratienaam",
       hasuraUrl: "Hasura URL",
       hasuraAdminSecret: "Hasura Admin Secret",
@@ -45,7 +45,7 @@ const hasuraPluginSpecification: PluginSpecification = {
     },
     en: {
       title: "Hasura Plugin",
-      description: "Interact with a Hasura-managed database via SQL and GraphQL.",
+      description: "Interact with a Hasura-managed database via GraphQL.",
       configurationTitle: "Configuration Name",
       hasuraUrl: "Hasura URL",
       hasuraAdminSecret: "Hasura Admin Secret",
