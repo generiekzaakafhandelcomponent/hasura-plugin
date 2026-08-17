@@ -1,7 +1,7 @@
 {
     "name": "@valtimo-plugins/hasura-plugin",
     "license": "EUPL-1.2",
-    "version": "1.3.0",
+    "version": "1.3.1",
     "scripts": {
         "build": "ng build @valtimo-plugins/hasura-plugin",
         "watch": "ng build @valtimo-plugins/hasura-plugin --watch"
