@@ -11,6 +11,10 @@
         "horecaData": {
             "description": "Horeca vergunningen opgehaald via Hasura GraphQL",
             "type": "object"
+        },
+        "horecaDataJson": {
+            "description": "Horeca vergunningen opgehaald via Hasura GraphQL als JSON tekst",
+            "type": "string"
         }
     }
 }

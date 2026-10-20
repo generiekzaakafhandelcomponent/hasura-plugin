@@ -19,6 +19,7 @@ package com.ritense.valtimoplugins.hasura.autoconfiguration
 import com.ritense.plugin.service.PluginService
 import com.ritense.valtimoplugins.hasura.client.HasuraClient
 import com.ritense.valtimoplugins.hasura.plugin.HasuraPluginFactory
+import com.ritense.valueresolver.ValueResolverService
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -35,5 +36,6 @@ class HasuraAutoConfiguration {
     fun hasuraPluginFactory(
         pluginService: PluginService,
         hasuraClient: HasuraClient,
-    ): HasuraPluginFactory = HasuraPluginFactory(pluginService, hasuraClient)
+        valueResolver: ValueResolverService,
+    ): HasuraPluginFactory = HasuraPluginFactory(pluginService, hasuraClient, valueResolver)
 }

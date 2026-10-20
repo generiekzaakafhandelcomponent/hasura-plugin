@@ -1,0 +1,38 @@
+{
+    "display": "form",
+    "components": [
+        {
+            "key": "html",
+            "type": "htmlelement",
+            "input": false,
+            "label": "Instructions",
+            "content": "Start dit proces om een horeca vergunning op te halen via de Hasura GraphQL API.",
+            "tableView": false,
+            "refreshOnChange": false
+        },
+        {
+            "key": "pv.horecaVergunningId",
+            "type": "number",
+            "input": true,
+            "label": "Horeca vergunning ID",
+            "tableView": true,
+            "delimiter": false,
+            "requireDecimal": false,
+            "decimalLimit": 0,
+            "validate": {
+                "required": true,
+                "integer": true,
+                "min": 1
+            },
+            "applyMaskOn": "change"
+        },
+        {
+            "key": "submit",
+            "type": "button",
+            "input": true,
+            "label": "Starten",
+            "tableView": false,
+            "disableOnInvalid": true
+        }
+    ]
+}

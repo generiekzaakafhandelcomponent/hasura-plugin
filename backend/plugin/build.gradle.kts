@@ -31,6 +31,7 @@ val operatonVersion: String by project
 dependencies {
     compileOnly("com.ritense.valtimo:plugin-valtimo")
     compileOnly("com.ritense.valtimo:process-document")
+    compileOnly("com.ritense.valtimo:value-resolver")
     compileOnly("com.ritense.valtimo:contract")
     compileOnly("org.operaton.bpm:operaton-engine:$operatonVersion")
     compileOnly("org.springframework.boot:spring-boot-autoconfigure")
@@ -42,6 +43,8 @@ dependencies {
     // Testing
     testImplementation("com.ritense.valtimo:plugin-valtimo")
     testImplementation("com.ritense.valtimo:process-document")
+    testImplementation("com.ritense.valtimo:value-resolver")
+    testImplementation("org.operaton.bpm:operaton-engine:$operatonVersion")
     testImplementation("com.ritense.valtimo:building-block")
     testImplementation("com.ritense.valtimo:local-resource")
     testImplementation("com.ritense.valtimo:test-utils-common")
