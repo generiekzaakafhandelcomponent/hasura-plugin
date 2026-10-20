@@ -23,7 +23,7 @@
                             {
                                 "key": "horecaData",
                                 "title": "Query resultaat (horeca_vergunning)",
-                                "value": "doc:/horecaData",
+                                "value": "doc:/horecaDataJson",
                                 "displayProperties": {
                                     "type": "text",
                                     "hideWhenEmpty": false

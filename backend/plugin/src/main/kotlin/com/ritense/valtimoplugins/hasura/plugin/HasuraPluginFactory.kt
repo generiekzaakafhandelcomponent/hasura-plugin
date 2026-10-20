@@ -20,6 +20,7 @@ import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimoplugins.hasura.client.HasuraClient
+import com.ritense.valueresolver.ValueResolverService
 import org.springframework.stereotype.Component
 
 @SkipComponentScan
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Component
 class HasuraPluginFactory(
     pluginService: PluginService,
     private val hasuraClient: HasuraClient,
+    private val valueResolver: ValueResolverService,
 ) : PluginFactory<HasuraPlugin>(pluginService) {
-    override fun create(): HasuraPlugin = HasuraPlugin(hasuraClient)
+    override fun create(): HasuraPlugin = HasuraPlugin(hasuraClient, valueResolver)
 }

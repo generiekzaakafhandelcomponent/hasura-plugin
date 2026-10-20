@@ -24,6 +24,7 @@ import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
 import com.ritense.valtimoplugins.hasura.client.HasuraClient
+import com.ritense.valueresolver.ValueResolverService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.operaton.bpm.engine.delegate.DelegateExecution
 
@@ -36,6 +37,7 @@ private val logger = KotlinLogging.logger {}
 )
 open class HasuraPlugin(
     private val hasuraClient: HasuraClient,
+    private val valueResolver: ValueResolverService,
 ) {
     private val objectMapper = jacksonObjectMapper()
 
@@ -58,7 +60,7 @@ open class HasuraPlugin(
         @PluginActionProperty resultProcessVariableName: String,
     ) {
         logger.info { "Executing GraphQL query via Hasura at $hasuraUrl" }
-        val data = hasuraClient.executeGraphQlQuery(hasuraUrl, hasuraAdminSecret, query, parseVariables(variables))
+        val data = hasuraClient.executeGraphQlQuery(hasuraUrl, hasuraAdminSecret, query, parseVariables(execution, variables))
         execution.setVariable(resultProcessVariableName, data)
     }
 
@@ -82,9 +84,15 @@ open class HasuraPlugin(
         resultProcessVariableName?.let { execution.setVariable(it, data) }
     }
 
-    private fun parseVariables(variables: String?): Map<String, Any> =
+    private fun parseVariables(
+        execution: DelegateExecution,
+        variables: String?,
+    ): Map<String, Any?> =
         if (!variables.isNullOrBlank()) {
-            objectMapper.readValue(variables, object : TypeReference<Map<String, Any>>() {})
+            val variableMap: Map<String, Any> = objectMapper.readValue(variables, object : TypeReference<Map<String, Any>>() {})
+            val requestedValues = variableMap.values.filterIsInstance<String>().filter { valueResolver.supportsValue(it) }
+            val resolvedValues = valueResolver.resolveValues(execution.processInstanceId, execution, requestedValues)
+            variableMap.mapValues { (_, value) -> if (value in resolvedValues) resolvedValues[value] else value }
         } else {
             emptyMap()
         }

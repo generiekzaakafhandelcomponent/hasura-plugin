@@ -3,5 +3,10 @@
         "processDefinitionKey": "horeca-vergunningen-beheer",
         "canInitializeDocument": true,
         "startableByUser": true
+    },
+    {
+        "processDefinitionKey": "horeca-vergunning-info",
+        "canInitializeDocument": true,
+        "startableByUser": true
     }
 ]

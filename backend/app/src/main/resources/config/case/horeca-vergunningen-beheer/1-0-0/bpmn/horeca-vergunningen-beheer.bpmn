@@ -40,7 +40,38 @@ execution.setVariable('newVergunningen', JSON.stringify(records));
         </bpmn:serviceTask>
         <bpmn:endEvent id="end-event" name="Process ended">
             <bpmn:extensionElements>
+                <camunda:executionListener event="start">
+                    <camunda:script scriptFormat="javascript"><![CDATA[
+function toJs(value) {
+  if (value === null || value === undefined) {
+    return null;
+  }
+  if (typeof value !== 'object') {
+    return value;
+  }
+  if (typeof value.entrySet === 'function') {
+    var result = {};
+    var iterator = value.entrySet().iterator();
+    while (iterator.hasNext()) {
+      var entry = iterator.next();
+      result[String(entry.getKey())] = toJs(entry.getValue());
+    }
+    return result;
+  }
+  if (typeof value.size === 'function' && typeof value.get === 'function') {
+    var list = [];
+    for (var i = 0; i < value.size(); i++) {
+      list.push(toJs(value.get(i)));
+    }
+    return list;
+  }
+  return String(value);
+}
+execution.setVariable('horecaQueryResultJson', JSON.stringify(toJs(execution.getVariable('horecaQueryResult')), null, 2));
+]]></camunda:script>
+                </camunda:executionListener>
                 <camunda:executionListener expression="${valueResolverDelegateService.handleValue(execution, 'doc:/horecaData', execution.getVariable('horecaQueryResult'))}" event="start"/>
+                <camunda:executionListener expression="${valueResolverDelegateService.handleValue(execution, 'doc:/horecaDataJson', execution.getVariable('horecaQueryResultJson'))}" event="start"/>
             </bpmn:extensionElements>
             <bpmn:incoming>Flow_4</bpmn:incoming>
         </bpmn:endEvent>

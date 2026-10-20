@@ -1,0 +1,21 @@
+[
+    {
+        "activityId": "start-event",
+        "activityType": "bpmn:StartEvent:start",
+        "processLinkType": "form",
+        "formDefinitionName": "start-form-horeca-vergunning-info"
+    },
+    {
+        "activityId": "query-horeca-vergunning",
+        "activityType": "bpmn:ServiceTask:start",
+        "processLinkType": "plugin",
+        "pluginDefinitionKey": "hasura-plugin",
+        "pluginActionDefinitionKey": "graphql-by-input",
+        "pluginConfigurationId": "4ac9a49f-4aeb-4f91-86d9-853fd95a1b33",
+        "actionProperties": {
+            "query": "query horecaVergunningByPK($id: Int!) {\n  horeca_vergunning_by_pk(id: $id) {\n    adres\n    begindatum\n    einddatum\n    id\n    locatie\n    o_tijden_terras_vr_za_tot\n    o_tijden_terras_vr_za_van\n    o_tijden_terras_zo_do_tot\n    o_tijden_terras_zo_do_van\n    openingstijden_vr_za_tot\n    openingstijden_vr_za_van\n    openingstijden_zo_do_tot\n    openingstijden_zo_do_van\n    postcode\n    publ_besluit_tijdelijk_terras\n    status_tijdelijk_terras\n    status_vergunning\n    status_verlenging_tijdelijk_terras\n    terrasgeometrie\n    tijdelijk_terras_details\n    toestemming_tijdelijk_terras\n    updated_at\n    verlenging_tijdelijk_terras_details\n    zaak_categorie\n    zaak_specificatie\n    zaaknaam\n    zaaknummer\n  }\n}",
+            "variables": "{\"id\": \"pv:horecaVergunningId\"}",
+            "resultProcessVariableName": "horecaQueryResult"
+        }
+    }
+]
