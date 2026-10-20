@@ -80,6 +80,12 @@ jobs:
         env:
           CHANGED_DIR: ${{ matrix.value }}
 
+      - id: gradleS3TaskAlize
+        name: Construct Gradle S3 publish task name from matrix variant
+        run: CHANGED_DIR=${{ matrix.value }}; echo "TASK_NAME=$(echo :$CHANGED_DIR:publishAllPublicationsToS3Repository | sed -e 's/\//:/g')">>${GITHUB_OUTPUT}
+        env:
+          CHANGED_DIR: ${{ matrix.value }}
+
       - id: gradleIntegrationTestTaskAlize
         name: Construct Gradle integration test task name from matrix variant
         run: CHANGED_DIR=${{ matrix.value }}; echo "TASK_NAME=$(echo :$CHANGED_DIR:integrationTesting | sed -e 's/\//:/g')">>${GITHUB_OUTPUT}
@@ -92,10 +98,41 @@ jobs:
       - name: Integration Test
         run: ./gradlew ${{ steps.gradleIntegrationTestTaskAlize.outputs.TASK_NAME }}
 
-      - name: Publish
+      - name: Publish to Sonatype (Maven Central)
         run: ./gradlew ${{ steps.gradleTaskAlize.outputs.TASK_NAME }}
         env:
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
           SONATYPE_USR: ${{ secrets.SONATYPE_USR }}
           SONATYPE_PSW: ${{ secrets.SONATYPE_PSW }}
+
+      # The AWS credentials are not configured in every fork/environment yet, so the
+      # second leg of the dual publish is skipped rather than failed when they are absent.
+      - id: s3Credentials
+        name: Check whether S3 credentials are available
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.VALTIMO_RELEASE_S3_BUCKET_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.VALTIMO_RELEASE_S3_BUCKET_ACCESS_KEY_SECRET }}
+        run: |
+          if [[ -n "$AWS_ACCESS_KEY_ID" && -n "$AWS_SECRET_ACCESS_KEY" ]]; then
+            echo "available=true" >> "${GITHUB_OUTPUT}"
+          else
+            echo "available=false" >> "${GITHUB_OUTPUT}"
+            echo "::warning::S3 credentials (VALTIMO_RELEASE_S3_BUCKET_ACCESS_KEY_ID / _SECRET) are not set — skipping the S3 publish."
+          fi
+
+      # Second leg of the dual publish: the same artifacts, same coordinates and version,
+      # pushed to the Valtimo AWS S3 bucket (valtimo-releases, eu-central-1).
+      - name: Publish to S3 (AWS)
+        if: steps.s3Credentials.outputs.available == 'true'
+        run: |
+          ./gradlew --no-parallel ${{ steps.gradleS3TaskAlize.outputs.TASK_NAME }} \
+            -PpublishToS3=true \
+            -Ps3Bucket=valtimo-releases \
+            -Ps3Region=eu-central-1
+        env:
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          # Gradle's `AwsCredentials` reads these standard AWS env var names.
+          AWS_ACCESS_KEY_ID: ${{ secrets.VALTIMO_RELEASE_S3_BUCKET_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.VALTIMO_RELEASE_S3_BUCKET_ACCESS_KEY_SECRET }}

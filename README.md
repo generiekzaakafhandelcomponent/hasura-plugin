@@ -40,3 +40,4 @@ A [Valtimo](https://www.valtimo.nl) plugin that integrates with [Hasura](https:/
 
 - [Getting Started](documentation/getting-started.md) — setup and development instructions
 - [Example Application](documentation/example-application.md) — running the example app locally
+- [Release notes](documentation/release-notes.md) — versiegeschiedenis en wijzigingen
