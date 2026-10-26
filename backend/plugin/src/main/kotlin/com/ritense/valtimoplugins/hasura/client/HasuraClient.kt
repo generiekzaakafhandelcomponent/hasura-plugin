@@ -36,14 +36,20 @@ class HasuraClient(
     fun executeGraphQlQuery(
         hasuraUrl: String,
         adminSecret: String,
+        userToken: String?,
         query: String,
         variables: Map<String, Any?>,
     ): Map<String, Any>? {
-        val client = graphQlClientCache.computeIfAbsent("$hasuraUrl|$adminSecret") {
+        val baseClient = graphQlClientCache.computeIfAbsent("$hasuraUrl|$adminSecret") {
             HttpSyncGraphQlClient.builder(restClient)
                 .url("$hasuraUrl/v1/graphql")
                 .header("x-hasura-admin-secret", adminSecret)
                 .build()
+        }
+        val client = if (userToken != null) {
+            baseClient.mutate().header("Authorization", "Bearer $userToken").build()
+        } else {
+            baseClient
         }
 
         val response = client.document(query)

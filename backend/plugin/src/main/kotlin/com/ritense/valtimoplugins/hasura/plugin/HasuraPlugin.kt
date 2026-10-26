@@ -23,6 +23,7 @@ import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
+import com.ritense.valtimo.contract.utils.SecurityUtils
 import com.ritense.valtimoplugins.hasura.client.HasuraClient
 import com.ritense.valueresolver.ValueResolverService
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -60,7 +61,8 @@ open class HasuraPlugin(
         @PluginActionProperty resultProcessVariableName: String,
     ) {
         logger.info { "Executing GraphQL query via Hasura at $hasuraUrl" }
-        val data = hasuraClient.executeGraphQlQuery(hasuraUrl, hasuraAdminSecret, query, parseVariables(execution, variables))
+        val userToken = SecurityUtils.getCurrentJwtTokenValue()
+        val data = hasuraClient.executeGraphQlQuery(hasuraUrl, hasuraAdminSecret, userToken, query, parseVariables(execution, variables))
         execution.setVariable(resultProcessVariableName, data)
     }
 
@@ -80,7 +82,7 @@ open class HasuraPlugin(
         val raw = execution.getVariable(objectsVariableName)
         val objects = if (raw is String) objectMapper.readValue(raw, object : TypeReference<Any>() {}) else raw
         val vars = mapOf("objects" to objects)
-        val data = hasuraClient.executeGraphQlQuery(hasuraUrl, hasuraAdminSecret, mutation, vars)
+        val data = hasuraClient.executeGraphQlQuery(hasuraUrl, hasuraAdminSecret, null, mutation, vars)
         resultProcessVariableName?.let { execution.setVariable(it, data) }
     }
 
