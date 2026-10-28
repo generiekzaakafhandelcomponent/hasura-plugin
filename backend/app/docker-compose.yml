@@ -66,7 +66,10 @@ services:
     container_name: hasura
     restart: unless-stopped
     depends_on:
-      - hasura-database
+      hasura-database:
+        condition: service_healthy
+      plugin-keycloak:
+        condition: service_healthy
     environment:
       HASURA_GRAPHQL_DATABASE_URL: postgres://hasura:hasura@hasura-database:5432/hasura
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
@@ -76,6 +79,15 @@ services:
       HASURA_GRAPHQL_METADATA_DATABASE_URL: postgres://hasura:hasura@hasura-database:5432/hasura
       HASURA_GRAPHQL_UNAUTHORIZED_ROLE: public
       HASURA_GRAPHQL_LOG_LEVEL: debug
+      HASURA_GRAPHQL_JWT_SECRET: >
+        {
+          "jwk_url": "http://plugin-keycloak:8080/auth/realms/valtimo/protocol/openid-connect/certs",
+          "claims_map": {
+            "x-hasura-allowed-roles": { "path": "$.resource_access.hasura.roles" },
+            "x-hasura-default-role": "ROLE_EXECUTE_GRAPHQL_QUERY",
+            "x-hasura-user-id": { "path": "$.sub" }
+          }
+        }
     ports:
       - "8085:8080"
     healthcheck:
@@ -95,6 +107,33 @@ services:
       POSTGRES_DB: hasura
     volumes:
       - hasura-plugin-database-data:/var/lib/postgresql/data # persist
+      - ./imports/hasura/ddl/create_horeca_vergunning.sql:/docker-entrypoint-initdb.d/01-create_horeca_vergunning.sql
+      - ./imports/hasura/ddl/data-horeca.sql:/docker-entrypoint-initdb.d/02-data-horeca.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U hasura" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Tracks horeca_vergunning and grants ROLE_EXECUTE_GRAPHQL_QUERY select access on it.
+  # Hasura's own tracked-table/permission metadata lives in its hdb_catalog, not in plain SQL,
+  # so it's seeded here via the metadata API instead of an init script, idempotently on every start.
+  hasura-metadata-seed:
+    image: curlimages/curl:8.11.0
+    container_name: hasura-metadata-seed
+    depends_on:
+      hasura:
+        condition: service_healthy
+    restart: "no"
+    entrypoint: [ "sh", "-c" ]
+    command:
+      - |
+        curl -s -X POST http://hasura:8080/v1/metadata \
+          -H "x-hasura-admin-secret: admin" -H "Content-Type: application/json" \
+          -d '{"type":"pg_track_table","args":{"source":"default","table":{"schema":"public","name":"horeca_vergunning"}}}'
+        curl -s -X POST http://hasura:8080/v1/metadata \
+          -H "x-hasura-admin-secret: admin" -H "Content-Type: application/json" \
+          -d '{"type":"pg_create_select_permission","args":{"source":"default","table":{"schema":"public","name":"horeca_vergunning"},"role":"ROLE_EXECUTE_GRAPHQL_QUERY","permission":{"columns":"*","filter":{},"allow_aggregations":false}}}'
 
 volumes:
   hasura-plugin-database-data:
