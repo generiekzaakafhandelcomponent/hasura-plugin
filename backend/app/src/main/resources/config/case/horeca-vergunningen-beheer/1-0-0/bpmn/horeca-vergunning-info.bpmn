@@ -11,8 +11,13 @@
       <bpmn:incoming>Flow_1</bpmn:incoming>
       <bpmn:outgoing>Flow_2</bpmn:outgoing>
     </bpmn:serviceTask>
+    <bpmn:userTask id="show-horeca-vergunning-result" name="Toon horeca vergunning resultaat">
+      <bpmn:incoming>Flow_2</bpmn:incoming>
+      <bpmn:outgoing>Flow_3</bpmn:outgoing>
+    </bpmn:userTask>
     <bpmn:sequenceFlow id="Flow_1" sourceRef="start-event" targetRef="query-horeca-vergunning" />
-    <bpmn:sequenceFlow id="Flow_2" sourceRef="query-horeca-vergunning" targetRef="end-event" />
+    <bpmn:sequenceFlow id="Flow_2" sourceRef="query-horeca-vergunning" targetRef="show-horeca-vergunning-result" />
+    <bpmn:sequenceFlow id="Flow_3" sourceRef="show-horeca-vergunning-result" targetRef="end-event" />
     <bpmn:endEvent id="end-event" name="Process ended">
       <bpmn:extensionElements>
         <camunda:executionListener event="start">
@@ -48,7 +53,7 @@ execution.setVariable('horecaQueryResultJson', JSON.stringify(toJs(execution.get
         <camunda:executionListener expression="${valueResolverDelegateService.handleValue(execution, &#39;doc:/horecaData&#39;, execution.getVariable(&#39;horecaQueryResult&#39;))}" event="start" />
         <camunda:executionListener expression="${valueResolverDelegateService.handleValue(execution, &#39;doc:/horecaDataJson&#39;, execution.getVariable(&#39;horecaQueryResultJson&#39;))}" event="start" />
       </bpmn:extensionElements>
-      <bpmn:incoming>Flow_2</bpmn:incoming>
+      <bpmn:incoming>Flow_3</bpmn:incoming>
     </bpmn:endEvent>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
@@ -67,10 +72,14 @@ execution.setVariable('horecaQueryResultJson', JSON.stringify(toJs(execution.get
         <dc:Bounds x="370" y="160" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_1_di" bpmnElement="show-horeca-vergunning-result">
+        <dc:Bounds x="520" y="160" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="EndEvent_1_di" bpmnElement="end-event">
-        <dc:Bounds x="582" y="182" width="36" height="36" />
+        <dc:Bounds x="692" y="182" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="564" y="225" width="74" height="14" />
+          <dc:Bounds x="674" y="225" width="74" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_1_di" bpmnElement="Flow_1">
@@ -79,7 +88,11 @@ execution.setVariable('horecaQueryResultJson', JSON.stringify(toJs(execution.get
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_2_di" bpmnElement="Flow_2">
         <di:waypoint x="470" y="200" />
-        <di:waypoint x="582" y="200" />
+        <di:waypoint x="520" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_3_di" bpmnElement="Flow_3">
+        <di:waypoint x="620" y="200" />
+        <di:waypoint x="692" y="200" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

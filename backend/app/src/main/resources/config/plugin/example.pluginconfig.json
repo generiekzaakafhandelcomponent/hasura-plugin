@@ -5,7 +5,9 @@
         "pluginDefinitionKey": "hasura-plugin",
         "properties": {
           "hasuraUrl": "http://localhost:8085",
-          "hasuraAdminSecret": "admin"
+          "tokenUrl": "http://localhost:8081/auth/realms/valtimo/protocol/openid-connect/token",
+          "clientId": "valtimo-user-m2m-client",
+          "clientSecret": "6ef6ca16-6b86-482a-a3d9-0561704c1db9"
         }
     }
 ]

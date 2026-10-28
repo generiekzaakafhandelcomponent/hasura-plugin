@@ -43,11 +43,31 @@
   >
   </v-input>
   <v-input
-    name="hasuraAdminSecret"
-    [title]="'hasuraAdminSecret' | pluginTranslate: pluginId | async"
+    name="tokenUrl"
+    [title]="'tokenUrl' | pluginTranslate: pluginId | async"
     [margin]="true"
     [disabled]="obs.disabled"
-    [defaultValue]="obs.prefill?.hasuraAdminSecret"
+    [defaultValue]="obs.prefill?.tokenUrl"
+    [required]="true"
+    [widthPx]="350"
+  >
+  </v-input>
+  <v-input
+    name="clientId"
+    [title]="'clientId' | pluginTranslate: pluginId | async"
+    [margin]="true"
+    [disabled]="obs.disabled"
+    [defaultValue]="obs.prefill?.clientId"
+    [required]="true"
+    [widthPx]="350"
+  >
+  </v-input>
+  <v-input
+    name="clientSecret"
+    [title]="'clientSecret' | pluginTranslate: pluginId | async"
+    [margin]="true"
+    [disabled]="obs.disabled"
+    [defaultValue]="obs.prefill?.clientSecret"
     [required]="true"
     [widthPx]="350"
     type="password"

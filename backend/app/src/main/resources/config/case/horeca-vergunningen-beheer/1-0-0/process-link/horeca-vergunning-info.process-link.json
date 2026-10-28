@@ -17,5 +17,11 @@
             "variables": "{\"id\": \"pv:horecaVergunningId\"}",
             "resultProcessVariableName": "horecaQueryResult"
         }
+    },
+    {
+        "activityId": "show-horeca-vergunning-result",
+        "activityType": "bpmn:UserTask:create",
+        "processLinkType": "form",
+        "formDefinitionName": "empty-form"
     }
 ]

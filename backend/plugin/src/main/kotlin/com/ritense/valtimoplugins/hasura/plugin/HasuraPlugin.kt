@@ -23,8 +23,8 @@ import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
-import com.ritense.valtimo.contract.utils.SecurityUtils
 import com.ritense.valtimoplugins.hasura.client.HasuraClient
+import com.ritense.valtimoplugins.hasura.client.HasuraGraphQlException
 import com.ritense.valueresolver.ValueResolverService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.operaton.bpm.engine.delegate.DelegateExecution
@@ -45,8 +45,14 @@ open class HasuraPlugin(
     @PluginProperty(key = "hasuraUrl", secret = false)
     lateinit var hasuraUrl: String
 
-    @PluginProperty(key = "hasuraAdminSecret", secret = true)
-    lateinit var hasuraAdminSecret: String
+    @PluginProperty(key = "tokenUrl", secret = false)
+    lateinit var tokenUrl: String
+
+    @PluginProperty(key = "clientId", secret = false)
+    lateinit var clientId: String
+
+    @PluginProperty(key = "clientSecret", secret = true)
+    lateinit var clientSecret: String
 
     @PluginAction(
         key = "graphql-by-input",
@@ -61,9 +67,8 @@ open class HasuraPlugin(
         @PluginActionProperty resultProcessVariableName: String,
     ) {
         logger.info { "Executing GraphQL query via Hasura at $hasuraUrl" }
-        val userToken = SecurityUtils.getCurrentJwtTokenValue()
-        val data = hasuraClient.executeGraphQlQuery(hasuraUrl, hasuraAdminSecret, userToken, query, parseVariables(execution, variables))
-        execution.setVariable(resultProcessVariableName, data)
+        val result = executeGraphQlQuery(query, parseVariables(execution, variables))
+        execution.setVariable(resultProcessVariableName, result)
     }
 
     @PluginAction(
@@ -82,9 +87,21 @@ open class HasuraPlugin(
         val raw = execution.getVariable(objectsVariableName)
         val objects = if (raw is String) objectMapper.readValue(raw, object : TypeReference<Any>() {}) else raw
         val vars = mapOf("objects" to objects)
-        val data = hasuraClient.executeGraphQlQuery(hasuraUrl, hasuraAdminSecret, null, mutation, vars)
-        resultProcessVariableName?.let { execution.setVariable(it, data) }
+        val result = executeGraphQlQuery(mutation, vars)
+        resultProcessVariableName?.let { execution.setVariable(it, result) }
     }
+
+    private fun executeGraphQlQuery(
+        query: String,
+        variables: Map<String, Any?>,
+    ): HasuraActionResult =
+        try {
+            val data = hasuraClient.executeGraphQlQuery(hasuraUrl, tokenUrl, clientId, clientSecret, query, variables)
+            HasuraActionResult(statusCode = 200, result = data)
+        } catch (ex: HasuraGraphQlException) {
+            logger.warn { "GraphQL errors from Hasura at $hasuraUrl: ${ex.errors}" }
+            HasuraActionResult(statusCode = ex.statusCode, result = mapOf("errors" to ex.errors))
+        }
 
     private fun parseVariables(
         execution: DelegateExecution,

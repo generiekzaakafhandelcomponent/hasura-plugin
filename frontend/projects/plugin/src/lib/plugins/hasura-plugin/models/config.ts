@@ -18,7 +18,9 @@ import {PluginConfigurationData} from "@valtimo/plugin";
 
 interface HasuraPluginConfig extends PluginConfigurationData {
   hasuraUrl: string;
-  hasuraAdminSecret: string;
+  tokenUrl: string;
+  clientId: string;
+  clientSecret: string;
 }
 
 interface GraphQlByInputActionConfig {
