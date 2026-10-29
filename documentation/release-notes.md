@@ -11,8 +11,8 @@ Overzicht van wijzigingen per versie van de Hasura-plugin.
   vers token.
 - Het resultaat van zowel de "GraphQL by Input"- als de "Mutation by Process Variable"-actie
   wordt nu opgeslagen als één object met de velden `statusCode` en `result`. Een GraphQL-fout
-  van Hasura wordt voortaan in deze procesvariabele vastgelegd (met een foutstatuscode en de
-  foutmelding) in plaats van de service-task te laten falen.
+  van Hasura (bijvoorbeeld een permissiefout) laat de service-task falen met de GraphQL-foutmelding,
+  in plaats van een leeg of foutief resultaat stilletjes in de procesvariabele op te slaan.
 
 ## 1.3.2
 

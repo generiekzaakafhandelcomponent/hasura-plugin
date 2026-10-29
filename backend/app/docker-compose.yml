@@ -84,7 +84,7 @@ services:
           "jwk_url": "http://plugin-keycloak:8080/auth/realms/valtimo/protocol/openid-connect/certs",
           "claims_map": {
             "x-hasura-allowed-roles": { "path": "$.resource_access.hasura.roles" },
-            "x-hasura-default-role": "ROLE_EXECUTE_GRAPHQL_QUERY",
+            "x-hasura-default-role": "ROLE_HASURA",
             "x-hasura-user-id": { "path": "$.sub" }
           }
         }
@@ -115,7 +115,7 @@ services:
       timeout: 5s
       retries: 10
 
-  # Tracks horeca_vergunning and grants ROLE_EXECUTE_GRAPHQL_QUERY select access on it.
+  # Tracks horeca_vergunning and grants ROLE_HASURA select access on it.
   # Hasura's own tracked-table/permission metadata lives in its hdb_catalog, not in plain SQL,
   # so it's seeded here via the metadata API instead of an init script, idempotently on every start.
   hasura-metadata-seed:
@@ -133,7 +133,7 @@ services:
           -d '{"type":"pg_track_table","args":{"source":"default","table":{"schema":"public","name":"horeca_vergunning"}}}'
         curl -s -X POST http://hasura:8080/v1/metadata \
           -H "x-hasura-admin-secret: admin" -H "Content-Type: application/json" \
-          -d '{"type":"pg_create_select_permission","args":{"source":"default","table":{"schema":"public","name":"horeca_vergunning"},"role":"ROLE_EXECUTE_GRAPHQL_QUERY","permission":{"columns":"*","filter":{},"allow_aggregations":false}}}'
+          -d '{"type":"pg_create_select_permission","args":{"source":"default","table":{"schema":"public","name":"horeca_vergunning"},"role":"ROLE_HASURA","permission":{"columns":"*","filter":{},"allow_aggregations":false}}}'
 
 volumes:
   hasura-plugin-database-data:

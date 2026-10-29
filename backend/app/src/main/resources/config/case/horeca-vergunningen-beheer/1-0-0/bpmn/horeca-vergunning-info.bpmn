@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.35.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.23.0">
   <bpmn:collaboration id="Collaboration_1">
     <bpmn:participant id="horeca-vergunning-info-participant" name="Horeca Vergunning info" processRef="horeca-vergunning-info" />
   </bpmn:collaboration>
@@ -21,7 +21,7 @@
     <bpmn:endEvent id="end-event" name="Process ended">
       <bpmn:extensionElements>
         <camunda:executionListener event="start">
-          <camunda:script scriptFormat="javascript"><![CDATA[
+          <camunda:script scriptFormat="javascript">
 function toJs(value) {
   if (value === null || value === undefined) {
     return null;
@@ -38,9 +38,9 @@ function toJs(value) {
     }
     return result;
   }
-  if (typeof value.size === 'function' && typeof value.get === 'function') {
+  if (typeof value.size === 'function' &amp;&amp; typeof value.get === 'function') {
     var list = [];
-    for (var i = 0; i < value.size(); i++) {
+    for (var i = 0; i &lt; value.size(); i++) {
       list.push(toJs(value.get(i)));
     }
     return list;
@@ -48,7 +48,7 @@ function toJs(value) {
   return String(value);
 }
 execution.setVariable('horecaQueryResultJson', JSON.stringify(toJs(execution.getVariable('horecaQueryResult')), null, 2));
-]]></camunda:script>
+</camunda:script>
         </camunda:executionListener>
         <camunda:executionListener expression="${valueResolverDelegateService.handleValue(execution, &#39;doc:/horecaData&#39;, execution.getVariable(&#39;horecaQueryResult&#39;))}" event="start" />
         <camunda:executionListener expression="${valueResolverDelegateService.handleValue(execution, &#39;doc:/horecaDataJson&#39;, execution.getVariable(&#39;horecaQueryResultJson&#39;))}" event="start" />
@@ -59,7 +59,7 @@ execution.setVariable('horecaQueryResultJson', JSON.stringify(toJs(execution.get
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1">
       <bpmndi:BPMNShape id="Participant_1_di" bpmnElement="horeca-vergunning-info-participant" isHorizontal="true">
-        <dc:Bounds x="160" y="100" width="1000" height="200" />
+        <dc:Bounds x="160" y="100" width="670" height="200" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="start-event">

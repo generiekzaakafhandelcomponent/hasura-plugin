@@ -153,7 +153,7 @@
                 "composites": {
                     "client": {
                         "hasura": [
-                            "ROLE_EXECUTE_GRAPHQL_QUERY"
+                            "ROLE_HASURA"
                         ]
                     }
                 }
@@ -553,7 +553,7 @@
             "hasura": [
                 {
                     "id": "b17bea8a-f588-452d-a2e8-0ea64e06c1c2",
-                    "name": "ROLE_EXECUTE_GRAPHQL_QUERY",
+                    "name": "ROLE_HASURA",
                     "description": "Allows executing GraphQL queries against Hasura",
                     "composite": false,
                     "clientRole": true,
@@ -919,7 +919,7 @@
                     "view-clients"
                 ],
                 "hasura": [
-                    "ROLE_EXECUTE_GRAPHQL_QUERY"
+                    "ROLE_HASURA"
                 ]
             },
             "notBefore": 0,

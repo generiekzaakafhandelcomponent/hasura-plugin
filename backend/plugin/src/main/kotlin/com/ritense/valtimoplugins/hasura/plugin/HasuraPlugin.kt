@@ -100,7 +100,7 @@ open class HasuraPlugin(
             HasuraActionResult(statusCode = 200, result = data)
         } catch (ex: HasuraGraphQlException) {
             logger.warn { "GraphQL errors from Hasura at $hasuraUrl: ${ex.errors}" }
-            HasuraActionResult(statusCode = ex.statusCode, result = mapOf("errors" to ex.errors))
+            throw ex
         }
 
     private fun parseVariables(
