@@ -18,8 +18,10 @@ package com.ritense.valtimoplugins.hasura.plugin
 
 import com.ritense.valtimoplugins.hasura.BaseTest
 import com.ritense.valtimoplugins.hasura.client.HasuraClient
+import com.ritense.valtimoplugins.hasura.client.HasuraGraphQlException
 import com.ritense.valueresolver.ValueResolverService
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -43,10 +45,11 @@ internal class HasuraPluginTest : BaseTest() {
         valueResolver = mock()
         execution = mock()
         whenever(execution.processInstanceId).thenReturn(PROCESS_INSTANCE_ID)
-
         plugin = HasuraPlugin(hasuraClient, valueResolver)
-        plugin.hasuraUrl = "http://hasura:8080"
-        plugin.hasuraAdminSecret = "secret"
+        plugin.hasuraUrl = HASURA_URL
+        plugin.tokenUrl = TOKEN_URL
+        plugin.clientId = CLIENT_ID
+        plugin.clientSecret = CLIENT_SECRET
     }
 
     @Test
@@ -107,16 +110,40 @@ internal class HasuraPluginTest : BaseTest() {
         verify(valueResolver, never()).resolveValues(any<String>(), any(), any())
     }
 
+    @Test
+    fun `graphQlByInput fails the task and does not store a result when Hasura denies permission`() {
+        val permissionError = HasuraGraphQlException(
+            statusCode = 400,
+            errors = listOf("field \"secret\" not found in type: 'query_root'"),
+        )
+        whenever(
+            hasuraClient.executeGraphQlQuery(any(), any(), any(), any(), any(), any()),
+        ).thenThrow(permissionError)
+
+        val exception = assertThrows(HasuraGraphQlException::class.java) {
+            plugin.graphQlByInput(execution, QUERY, null, "result")
+        }
+
+        assertEquals(permissionError, exception)
+        verify(execution, never()).setVariable(any(), any())
+    }
+
     private fun executeAndCaptureVariables(variables: String?): Map<String, Any?> {
         plugin.graphQlByInput(execution, QUERY, variables, "result")
 
         val captor = argumentCaptor<Map<String, Any?>>()
-        verify(hasuraClient).executeGraphQlQuery(eq("http://hasura:8080"), eq("secret"), eq(QUERY), captor.capture())
+        verify(hasuraClient).executeGraphQlQuery(
+            eq(HASURA_URL), eq(TOKEN_URL), eq(CLIENT_ID), eq(CLIENT_SECRET), eq(QUERY), captor.capture(),
+        )
         return captor.firstValue
     }
 
     companion object {
         private const val PROCESS_INSTANCE_ID = "process-instance-id"
         private const val QUERY = "query { cases { id } }"
+        private const val HASURA_URL = "http://hasura:8080"
+        private const val TOKEN_URL = "https://keycloak.example.com/realms/test/protocol/openid-connect/token"
+        private const val CLIENT_ID = "client-id"
+        private const val CLIENT_SECRET = "client-secret"
     }
 }
