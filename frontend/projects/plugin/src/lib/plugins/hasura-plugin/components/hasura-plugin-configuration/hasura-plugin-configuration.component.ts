@@ -50,7 +50,13 @@ export class HasuraPluginConfigurationComponent implements PluginConfigurationCo
   }
 
   private handleValid(formValue: HasuraPluginConfig): void {
-    const valid = !!(formValue.configurationTitle && formValue.hasuraUrl && formValue.hasuraAdminSecret);
+    const valid = !!(
+      formValue.configurationTitle &&
+      formValue.hasuraUrl &&
+      formValue.tokenUrl &&
+      formValue.clientId &&
+      formValue.clientSecret
+    );
     this.valid$.next(valid);
     this.valid.emit(valid);
   }

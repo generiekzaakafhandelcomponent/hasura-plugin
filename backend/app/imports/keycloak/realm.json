@@ -146,10 +146,17 @@
             {
                 "id": "b8feef22-2fe3-4536-b624-89d76bdc9e06",
                 "name": "ROLE_USER",
-                "composite": false,
+                "composite": true,
                 "clientRole": false,
                 "containerId": "valtimo",
-                "attributes": {}
+                "attributes": {},
+                "composites": {
+                    "client": {
+                        "hasura": [
+                            "ROLE_HASURA"
+                        ]
+                    }
+                }
             },
             {
                 "id": "28cae21b-9e03-4c6b-b759-53b80b61acc1",
@@ -542,6 +549,17 @@
                     "containerId": "iko",
                     "attributes": {}
                 }
+            ],
+            "hasura": [
+                {
+                    "id": "b17bea8a-f588-452d-a2e8-0ea64e06c1c2",
+                    "name": "ROLE_HASURA",
+                    "description": "Allows executing GraphQL queries against Hasura",
+                    "composite": false,
+                    "clientRole": true,
+                    "containerId": "aebc48e3-902d-41f9-b7b2-8ca21cf8e7eb",
+                    "attributes": {}
+                }
             ]
         }
     },
@@ -899,6 +917,9 @@
                     "query-groups",
                     "view-users",
                     "view-clients"
+                ],
+                "hasura": [
+                    "ROLE_HASURA"
                 ]
             },
             "notBefore": 0,
@@ -1299,15 +1320,13 @@
                 "oauth2.device.authorization.grant.enabled": "false",
                 "oidc.ciba.grant.enabled": "false"
             },
-            "authenticationFlowBindingOverrides": {
-            },
+            "authenticationFlowBindingOverrides": {},
             "baseUrl": "",
             "bearerOnly": false,
             "clientAuthenticatorType": "client-secret",
             "clientId": "iko",
             "consentRequired": false,
-            "defaultClientScopes": [
-            ],
+            "defaultClientScopes": [],
             "description": "",
             "directAccessGrantsEnabled": true,
             "enabled": true,
@@ -1317,8 +1336,7 @@
             "name": "IKO",
             "nodeReRegistrationTimeout": -1,
             "notBefore": 0,
-            "optionalClientScopes": [
-            ],
+            "optionalClientScopes": [],
             "protocol": "openid-connect",
             "protocolMappers": [
                 {
@@ -1587,6 +1605,25 @@
                 "offline_access",
                 "microprofile-jwt"
             ]
+        },
+        {
+            "id": "aebc48e3-902d-41f9-b7b2-8ca21cf8e7eb",
+            "clientId": "hasura",
+            "name": "Hasura",
+            "description": "Role container for Hasura GraphQL authorization scopes",
+            "enabled": true,
+            "protocol": "openid-connect",
+            "bearerOnly": true,
+            "publicClient": false,
+            "standardFlowEnabled": false,
+            "implicitFlowEnabled": false,
+            "directAccessGrantsEnabled": false,
+            "serviceAccountsEnabled": false,
+            "fullScopeAllowed": false,
+            "attributes": {},
+            "protocolMappers": [],
+            "defaultClientScopes": [],
+            "optionalClientScopes": []
         }
     ],
     "clientScopes": [
