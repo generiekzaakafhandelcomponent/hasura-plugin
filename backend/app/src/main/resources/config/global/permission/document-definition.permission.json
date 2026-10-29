@@ -5,7 +5,6 @@
             "view",
             "view_list",
             "create",
-            "inspect",
             "modify",
             "delete"
         ],
