@@ -2,7 +2,7 @@
     "name": "hasura-plugin",
     "version": "1.0.0",
     "engines": {
-        "node": ">=20.0.0 <23.0.0"
+        "node": ">=22.0.0 <23.0.0"
     },
     "scripts": {
         "build": "node --max_old_space_size=5048 ./node_modules/@angular/cli/bin/ng build --output-path=dist",
